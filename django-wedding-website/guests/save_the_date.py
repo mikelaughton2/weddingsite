@@ -130,6 +130,7 @@ def send_save_the_date_email(context, recipients, test_only=False):
     msg.attach_alternative(template_html, "text/html")
     msg.mixed_subtype = 'related'
     for filename in (context['header_filename'], context['main_image']):
+        #THIS PATH IS HARD CODED - YOU CANNOT GET AROUND IT!
         attachment_path = os.path.join(os.path.dirname(__file__), 'static', 'save-the-date', 'images', filename)
         with open(attachment_path, "rb") as image_file:
             msg_img = MIMEImage(image_file.read())
