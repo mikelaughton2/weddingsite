@@ -166,5 +166,6 @@ cython_debug/
 
 #django
 settings.py
+media/
 =======
 >>>>>>> 4269de444d03f2fde54e7102486043a65ae03158
