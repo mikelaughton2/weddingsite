@@ -252,9 +252,9 @@
                               <span class="appleFooter" style="color:#666666; align-content:center;">
                               {% block footer_content %}
                               Can't make it? Let us know at <a class="moz-txt-link-abbreviated" href="mailto:{{ rsvp_address }}">{{ rsvp_address }}</a>.
-                              {% comment %}{% if email_mode %}{% endcomment %}
+                              {% if email_mode %}
                                   <p><a href="{{ site_url }}">{{ site_url }}</a> {% if site_pwd %} (Password | Slaptažodis: {{ site_pwd }}){% endif %}</p>
-                              {% comment %}{% endif %}{%endcomment%}
+                              {% endif %}
                               {% endblock %}
                               </span>
                                 </td>
