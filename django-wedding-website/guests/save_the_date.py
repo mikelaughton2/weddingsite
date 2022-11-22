@@ -9,6 +9,7 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from guests.models import Party
+from babtyno.models import HomePage
 
 
 SAVE_THE_DATE_TEMPLATE = 'guests/email_templates/save_the_date.html'
@@ -98,6 +99,14 @@ def get_template_id_from_party(party):
     else:
         return None
 
+def get_site_password():
+    #Return the site passsword or none (handle none in template)
+    #Relies on there being a page with the slug 'home'
+    try:
+        hp_pwd = HomePage.objects.get(slug='home')
+        return hp_pwd.get_view_restrictions().values_list('password',flat=True)[0]
+    except HomePage.DoesNotExist:
+        return ''
 
 def get_save_the_date_context(template_id):
     template_id = (template_id or '').lower()
@@ -111,6 +120,7 @@ def get_save_the_date_context(template_id):
     context['location'] = settings.WEDDING_LOCATION
     context['date'] = settings.WEDDING_DATE
     context['page_title'] = (settings.BRIDE_AND_GROOM + ' - Save the Date!')
+    context['site_pwd'] = get_site_password()
     context['preheader_text'] = (
         "The date that you've eagerly been waiting for is finally here. " + settings.BRIDE_AND_GROOM + " are getting married! Save the date!"
     )
