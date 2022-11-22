@@ -39,6 +39,12 @@ class HomePage(Page):
 class BlogPost(Page):
     pass
 
+class SimplePage(Page):
+    body = RichTextField(blank=True)
+    content_panels = Page.content_panels + [
+        FieldPanel('body',help_text="Your text")
+    ]
+    template = "simplepage.html"
 
 class RSVP(Page):
     welcome_text = RichTextField(blank=True)
