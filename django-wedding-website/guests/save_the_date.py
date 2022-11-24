@@ -74,6 +74,7 @@ def send_save_the_date_to_party(party, test_only=False):
     if not recipients:
         print('===== WARNING: no valid email addresses found for {} ====='.format(party))
     else:
+        print(recipients)
         send_save_the_date_email(
             context,
             recipients,
@@ -142,10 +143,14 @@ def send_save_the_date_email(context, recipients, test_only=False):
     for filename in (context['header_filename'], context['main_image']):
         #THIS PATH IS HARD CODED - YOU CANNOT GET AROUND IT!
         attachment_path = os.path.join(os.path.dirname(__file__), 'static', 'save-the-date', 'images', filename)
-        with open(attachment_path, "rb") as image_file:
-            msg_img = MIMEImage(image_file.read())
-            msg_img.add_header('Content-ID', '<{}>'.format(filename))
-            msg.attach(msg_img)
+        try:
+            with open(attachment_path, "rb") as image_file:
+                msg_img = MIMEImage(image_file.read())
+                msg_img.add_header('Content-ID', '<{}>'.format(filename))
+                msg.attach(msg_img)
+                print("attached file fine")
+        except:
+            print("error attaching file")
 
     print('sending {} to {}'.format(context['name'], ', '.join(recipients)))
     if not test_only:
