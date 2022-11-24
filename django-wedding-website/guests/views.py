@@ -14,8 +14,8 @@ from guests.invitation import get_invitation_context, INVITATION_TEMPLATE, guess
     send_invitation_email
 from guests.models import Guest, MEALS, Party
 from guests.save_the_date import get_save_the_date_context, send_save_the_date_email, SAVE_THE_DATE_TEMPLATE, \
-    SAVE_THE_DATE_CONTEXT_MAP
-
+    SAVE_THE_DATE_CONTEXT_MAP, send_all_save_the_dates
+from .forms import ConfirmForm
 
 class GuestListView(ListView):
     model = Guest
@@ -130,6 +130,16 @@ def invitation_email_test(request, invite_id):
     send_invitation_email(party, recipients=[settings.DEFAULT_WEDDING_TEST_EMAIL])
     return HttpResponse('sent!')
 
+@login_required
+def save_the_dates_send(request):
+    if request.method == "POST":
+        form = ConfirmForm(request.POST)
+        if form.is_valid():
+            send_all_save_the_dates()
+        return HttpResponse("Sent! {}".format(request.POST))
+    else:
+        form = ConfirmForm()
+        return render(request,"guests/proforma.html",context={'form':form})
 
 def save_the_date_random(request):
     template_id = random.choice(SAVE_THE_DATE_CONTEXT_MAP.keys())

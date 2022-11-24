@@ -1,5 +1,9 @@
 from wagtail.contrib.modeladmin.options import ModelAdmin, ModelAdminGroup, modeladmin_register
 from .models import Party, Guest
+from guests.views import save_the_dates_send
+from wagtail import hooks
+from wagtail.admin.menu import MenuItem
+from django.urls import path, reverse
 
 class PartyAdmin(ModelAdmin):
     model = Party
@@ -26,3 +30,13 @@ class PartyGuest(ModelAdminGroup):
     items = (PartyAdmin,GuestAdmin)
 
 modeladmin_register(PartyGuest)
+
+@hooks.register('register_admin_url')
+def register_send_stds():
+    return [
+        path('send_stds/',save_the_dates_send,name='send-save-the-dates')
+    ]
+
+@hooks.register('register_admin_menu_item')
+def register_send_stds_menu_item():
+    return MenuItem('Send STDs',reverse('send-save-the-dates'),icon_name='date')

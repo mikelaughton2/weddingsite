@@ -1,0 +1,10 @@
+{% extends "wagtailadmin/base.html" %}
+
+{% block titletag %} Send save the dates? {%endblock%}
+{% block content %}
+<form method="post">
+{{form.as_table}}
+{% csrf_token %}
+<input type="Submit" value="Submit">
+</form>
+{% endblock %}
