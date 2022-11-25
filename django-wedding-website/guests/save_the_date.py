@@ -78,7 +78,7 @@ def send_save_the_date_to_party(party, test_only=False):
         print(recipients)
         send_save_the_date_email(
             context,
-            recipients,
+            bcc=recipients,
             test_only=test_only
         )
 
