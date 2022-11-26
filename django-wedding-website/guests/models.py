@@ -53,6 +53,8 @@ class Party(models.Model):
     def guest_emails(self):
         return list(filter(None, self.guest_set.values_list('email', flat=True)))
 
+    class Meta:
+        verbose_name_plural = "Parties"
 
 MEALS = [
     ('beef', 'cow'),
