@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.http import Http404
 from django.template.loader import render_to_string
 from guests.models import Party, MEALS
+from django.utils.translation import gettext as _
 
 INVITATION_TEMPLATE = 'guests/email_templates/invitation.html'
 
@@ -28,7 +29,7 @@ def get_invitation_context(party):
         'main_image': 'bride-groom.png',
         'main_color': '#fff3e8',
         'font_color': '#666666',
-        'page_title': "Cory and Rowena - You're Invited!",
+        'page_title': settings.BRIDE_AND_GROOM + ": You're invited!",
         'preheader_text': "You are invited!",
         'invitation_id': party.invitation_id,
         'party': party,
@@ -40,7 +41,7 @@ def send_invitation_email(party, test_only=False, recipients=None):
     if recipients is None:
         recipients = party.guest_emails
     if not recipients:
-        print ('===== WARNING: no valid email addresses found for {} ====='.format(party))
+        print (_('===== WARNING: no valid email addresses found for {} ====='.format(party)))
         return
 
     context = get_invitation_context(party)
@@ -48,13 +49,13 @@ def send_invitation_email(party, test_only=False, recipients=None):
     context['site_url'] = settings.WEDDING_WEBSITE_URL
     context['couple'] = settings.BRIDE_AND_GROOM
     template_html = render_to_string(INVITATION_TEMPLATE, context=context)
-    template_text = "You're invited to {}'s wedding. To view this invitation, visit {} in any browser.".format(
+    template_text = _("You're invited to {}'s wedding. To view this invitation, visit {} in any browser.".format(
         settings.BRIDE_AND_GROOM,
         reverse('invitation', args=[context['invitation_id']])
-    )
-    subject = "You're invited"
+    ))
+    subject = _("You're invited")
     # https://www.vlent.nl/weblog/2014/01/15/sending-emails-with-embedded-images-in-django/
-    msg = EmailMultiAlternatives(subject, template_text, settings.DEFAULT_WEDDING_FROM_EMAIL, recipients,
+    msg = EmailMultiAlternatives(subject, template_text, settings.DEFAULT_WEDDING_FROM_EMAIL, bcc=recipients,
                                  cc=settings.WEDDING_CC_LIST,
                                  reply_to=[settings.DEFAULT_WEDDING_REPLY_EMAIL])
     msg.attach_alternative(template_html, "text/html")

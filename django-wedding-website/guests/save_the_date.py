@@ -4,15 +4,28 @@ from email.mime.image import MIMEImage
 import os
 from datetime import datetime
 import random
-
+from django.utils.translation import gettext as _
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.shortcuts import get_object_or_404
 from guests.models import Party
 from babtyno.models import HomePage
+from babtynoemail.models import SaveTheDateEmail as STD
+
+SAVE_THE_DATE_TEMPLATE = 'mail/guest_email.html'
 
 
-SAVE_THE_DATE_TEMPLATE = 'guests/email_templates/save_the_date.html'
+# SAVE_THE_DATE_CONTEXT_MAP = {
+#
+#     'title': 'whatever-the-database-says',
+#     'hero-image': 'whatever-the-database-says',
+#     'main colour': 'whatever the database says',
+#     'text colour': 'whatever the database says',
+# }
+
+# Get template from Party needs to be reformed to select choose from a guest email in the database
+
 SAVE_THE_DATE_CONTEXT_MAP = {
         'lions-head': {
             'title': "Lion's Head",
@@ -78,28 +91,30 @@ def send_save_the_date_to_party(party, test_only=False):
         print(recipients)
         send_save_the_date_email(
             context,
-            bcc=recipients,
+            recipients,
             test_only=test_only
         )
 
-
 def get_template_id_from_party(party):
-    if party.type == 'formal':
-        # all formal guests get formal invites
-        return random.choice(['lions-head', 'ski-trip'])
-    elif party.type == 'dimagi':
-        # all non-formal dimagis get dimagi invites
-        return 'dimagi'
-    elif party.type == 'fun':
-        all_options = list(SAVE_THE_DATE_CONTEXT_MAP.keys())
-        all_options.remove('dimagi')
-        if party.category == 'ro':
-            # don't send the canada invitation to ro's crowd
-            all_options.remove('canada')
-        # otherwise choose randomly from all options for everyone else
-        return random.choice(all_options)
-    else:
-        return None
+    #Dummy function for now - return the pk of the first obj
+    return STD.objects.first().id
+# def get_template_id_from_party(party):
+#     if party.type == 'formal':
+#         # all formal guests get formal invites
+#         return random.choice(['lions-head', 'ski-trip'])
+#     elif party.type == 'dimagi':
+#         # all non-formal dimagis get dimagi invites
+#         return 'dimagi'
+#     elif party.type == 'fun':
+#         all_options = list(SAVE_THE_DATE_CONTEXT_MAP.keys())
+#         all_options.remove('dimagi')
+#         if party.category == 'ro':
+#             # don't send the canada invitation to ro's crowd
+#             all_options.remove('canada')
+#         # otherwise choose randomly from all options for everyone else
+#         return random.choice(all_options)
+#     else:
+#         return None
 
 def get_site_password():
     #Return the site passsword or none (handle none in template)
@@ -110,24 +125,43 @@ def get_site_password():
     except HomePage.DoesNotExist:
         return ''
 
+# def get_save_the_date_context(template_id):
+#     template_id = (template_id or '').lower()
+#     if template_id not in SAVE_THE_DATE_CONTEXT_MAP:
+#         template_id = 'lions-head'
+#     context = copy(SAVE_THE_DATE_CONTEXT_MAP[template_id])
+#     context['name'] = template_id
+#     context['rsvp_address'] = settings.DEFAULT_WEDDING_REPLY_EMAIL
+#     context['site_url'] = settings.WEDDING_WEBSITE_URL
+#     context['couple'] = settings.BRIDE_AND_GROOM
+#     context['location'] = settings.WEDDING_LOCATION
+#     context['date'] = settings.WEDDING_DATE
+#     context['page_title'] = (settings.BRIDE_AND_GROOM + _(' - Save the Date!'))
+#     context['site_pwd'] = get_site_password()
+#     context['preheader_text'] = (
+#         "The date that you've eagerly been waiting for is finally here. " + settings.BRIDE_AND_GROOM + " are getting married! Save the date!"
+#     )
+#     return context
+
 def get_save_the_date_context(template_id):
-    template_id = (template_id or '').lower()
-    if template_id not in SAVE_THE_DATE_CONTEXT_MAP:
-        template_id = 'lions-head'
-    context = copy(SAVE_THE_DATE_CONTEXT_MAP[template_id])
-    context['name'] = template_id
+    template = get_object_or_404(STD,pk=template_id)
+    context = {
+        'email':template,
+    }
+    context['title']=template.title
+    context['header_filename']=template.header_image
+    context['main_image']=template.hero_image
+    #note en-gb v. en-ca from original
+    context['main_color']=template.main_colour
+    context['font_color']=template.font_colour
     context['rsvp_address'] = settings.DEFAULT_WEDDING_REPLY_EMAIL
     context['site_url'] = settings.WEDDING_WEBSITE_URL
     context['couple'] = settings.BRIDE_AND_GROOM
     context['location'] = settings.WEDDING_LOCATION
     context['date'] = settings.WEDDING_DATE
-    context['page_title'] = (settings.BRIDE_AND_GROOM + ' - Save the Date!')
+    context['page_title'] = (settings.BRIDE_AND_GROOM + _(' - Save the Date!'))
     context['site_pwd'] = get_site_password()
-    context['preheader_text'] = (
-        "The date that you've eagerly been waiting for is finally here. " + settings.BRIDE_AND_GROOM + " are getting married! Save the date!"
-    )
     return context
-
 
 def send_save_the_date_email(context, recipients, test_only=False):
     context['email_mode'] = True
@@ -138,12 +172,12 @@ def send_save_the_date_email(context, recipients, test_only=False):
     template_text = ("Save the date for " + settings.BRIDE_AND_GROOM + "'s wedding! " + settings.WEDDING_DATE + ". " + settings.WEDDING_LOCATION)
     subject = 'Save the Date!'
     # https://www.vlent.nl/weblog/2014/01/15/sending-emails-with-embedded-images-in-django/
-    msg = EmailMultiAlternatives(subject, template_text, settings.DEFAULT_WEDDING_FROM_EMAIL, recipients, reply_to=[settings.DEFAULT_WEDDING_REPLY_EMAIL])
+    msg = EmailMultiAlternatives(subject, template_text, settings.DEFAULT_WEDDING_FROM_EMAIL, bcc=recipients, reply_to=[settings.DEFAULT_WEDDING_REPLY_EMAIL])
     msg.attach_alternative(template_html, "text/html")
     msg.mixed_subtype = 'related'
     for filename in (context['header_filename'], context['main_image']):
         #THIS PATH IS HARD CODED - YOU CANNOT GET AROUND IT!
-        attachment_path = os.path.join(os.path.dirname(__file__), 'static', 'save-the-date', 'images', filename)
+        #attachment_path = os.path.join(os.path.dirname(__file__), 'static', 'save-the-date', 'images', filename)
         try:
             with open(attachment_path, "rb") as image_file:
                 msg_img = MIMEImage(image_file.read())
@@ -153,7 +187,6 @@ def send_save_the_date_email(context, recipients, test_only=False):
         except:
             print("error attaching file")
 
-    print('sending {} to {}'.format(context['name'], ', '.join(recipients)))
     if not test_only:
         msg.send()
 

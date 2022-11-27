@@ -114,6 +114,7 @@ def rsvp_confirm(request, invite_id=None):
     return render(request, template_name='guests/rsvp_confirmation.html', context={
         'party': party,
         'support_email': settings.DEFAULT_WEDDING_REPLY_EMAIL,
+        'couple': settings.BRIDE_AND_GROOM,
     })
 
 
@@ -135,12 +136,23 @@ def save_the_dates_send(request):
     if request.method == "POST":
         form = ConfirmForm(request.POST)
         if form.is_valid():
-            send_all_save_the_dates(mark_as_sent=True)
-        return HttpResponse("Sent! {}")
+            test_only = form.cleaned_data['test_only']
+            mark_sent = form.cleaned_data['mark_sent']
+            send_all_save_the_dates(test_only = test_only,mark_as_sent=mark_sent)
+            context = {}
+            context['title']="Successful test" if test_only else "Sent!"
+            context['message']="<p>"
+            context['message']+="Sent!" if not test_only else "Successful test"
+            context['message']+="</p>"
+            context['message']+="<p>"
+            context['message']+="Marked sent" if mark_sent else "Not marked sent"
+            context['message']+="</p>"
+        return render(request,"guests/admin_message.html",context=context)
     else:
         form = ConfirmForm()
         return render(request,"guests/proforma.html",context={'form':form})
 
+#This will break
 def save_the_date_random(request):
     template_id = random.choice(SAVE_THE_DATE_CONTEXT_MAP.keys())
     return save_the_date_preview(request, template_id)
