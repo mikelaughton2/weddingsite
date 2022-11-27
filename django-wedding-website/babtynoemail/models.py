@@ -8,9 +8,11 @@ from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.models import Page, Orderable
 from django import forms
+from bigday import settings
 
 class SaveTheDateEmail(models.Model):
     title = models.CharField(max_length=200,null=True)
+    language = models.CharField(max_length=25,choices=settings.WAGTAIL_CONTENT_LANGUAGES,default=settings.WAGTAIL_CONTENT_LANGUAGES[0])
     header_image = models.ForeignKey('wagtailimages.Image',null=True,blank=True,on_delete=models.SET_NULL,related_name="+")
     subject = models.CharField(max_length=200,null=True)
     main_colour = models.CharField(max_length=9,default="#FFFFFF")
@@ -41,3 +43,6 @@ class SaveTheDateEmail(models.Model):
         FieldPanel('body',help_text="Text of email"),
         FieldPanel('hero_image',help_text="Pretty image"),
     ]
+
+    def __str(self):
+        return "{}, ({})".format(self.title,self.language)

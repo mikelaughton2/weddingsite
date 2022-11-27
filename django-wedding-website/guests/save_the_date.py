@@ -26,6 +26,7 @@ SAVE_THE_DATE_TEMPLATE = 'mail/guest_email.html'
 
 # Get template from Party needs to be reformed to select choose from a guest email in the database
 
+#Delete this
 SAVE_THE_DATE_CONTEXT_MAP = {
         'lions-head': {
             'title': "Lion's Head",
@@ -81,7 +82,6 @@ def send_all_save_the_dates(test_only=False, mark_as_sent=False):
             party.save_the_date_sent = datetime.now()
             party.save()
 
-
 def send_save_the_date_to_party(party, test_only=False):
     context = get_save_the_date_context(get_template_id_from_party(party))
     recipients = party.guest_emails
@@ -97,24 +97,10 @@ def send_save_the_date_to_party(party, test_only=False):
 
 def get_template_id_from_party(party):
     #Dummy function for now - return the pk of the first obj
-    return STD.objects.first().id
-# def get_template_id_from_party(party):
-#     if party.type == 'formal':
-#         # all formal guests get formal invites
-#         return random.choice(['lions-head', 'ski-trip'])
-#     elif party.type == 'dimagi':
-#         # all non-formal dimagis get dimagi invites
-#         return 'dimagi'
-#     elif party.type == 'fun':
-#         all_options = list(SAVE_THE_DATE_CONTEXT_MAP.keys())
-#         all_options.remove('dimagi')
-#         if party.category == 'ro':
-#             # don't send the canada invitation to ro's crowd
-#             all_options.remove('canada')
-#         # otherwise choose randomly from all options for everyone else
-#         return random.choice(all_options)
-#     else:
-#         return None
+    try:
+        return get_object_or_404(SaveTheDateEmail,pk=party.pk)
+    except:
+        return STD.objects.first().id
 
 def get_site_password():
     #Return the site passsword or none (handle none in template)
@@ -124,24 +110,6 @@ def get_site_password():
         return hp_pwd.get_view_restrictions().values_list('password',flat=True)[0]
     except HomePage.DoesNotExist:
         return ''
-
-# def get_save_the_date_context(template_id):
-#     template_id = (template_id or '').lower()
-#     if template_id not in SAVE_THE_DATE_CONTEXT_MAP:
-#         template_id = 'lions-head'
-#     context = copy(SAVE_THE_DATE_CONTEXT_MAP[template_id])
-#     context['name'] = template_id
-#     context['rsvp_address'] = settings.DEFAULT_WEDDING_REPLY_EMAIL
-#     context['site_url'] = settings.WEDDING_WEBSITE_URL
-#     context['couple'] = settings.BRIDE_AND_GROOM
-#     context['location'] = settings.WEDDING_LOCATION
-#     context['date'] = settings.WEDDING_DATE
-#     context['page_title'] = (settings.BRIDE_AND_GROOM + _(' - Save the Date!'))
-#     context['site_pwd'] = get_site_password()
-#     context['preheader_text'] = (
-#         "The date that you've eagerly been waiting for is finally here. " + settings.BRIDE_AND_GROOM + " are getting married! Save the date!"
-#     )
-#     return context
 
 def get_save_the_date_context(template_id):
     template = get_object_or_404(STD,pk=template_id)
@@ -164,6 +132,7 @@ def get_save_the_date_context(template_id):
     return context
 
 def send_save_the_date_email(context, recipients, test_only=False):
+    print(context)
     context['email_mode'] = True
     context['rsvp_address'] = settings.DEFAULT_WEDDING_REPLY_EMAIL
     context['site_url'] = settings.WEDDING_WEBSITE_URL
@@ -176,8 +145,7 @@ def send_save_the_date_email(context, recipients, test_only=False):
     msg.attach_alternative(template_html, "text/html")
     msg.mixed_subtype = 'related'
     for filename in (context['header_filename'], context['main_image']):
-        #THIS PATH IS HARD CODED - YOU CANNOT GET AROUND IT!
-        #attachment_path = os.path.join(os.path.dirname(__file__), 'static', 'save-the-date', 'images', filename)
+        attachment_path = filename.file.path
         try:
             with open(attachment_path, "rb") as image_file:
                 msg_img = MIMEImage(image_file.read())

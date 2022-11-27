@@ -23,6 +23,10 @@ class Party(models.Model):
     """
     name = models.TextField()
     type = models.CharField(max_length=10, choices=ALLOWED_TYPES)
+    save_the_date_template = models.ForeignKey("babtynoemail.SaveTheDateEmail",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True)
     category = models.CharField(max_length=20, null=True, blank=True)
     save_the_date_sent = models.DateTimeField(null=True, blank=True, default=None)
     save_the_date_opened = models.DateTimeField(null=True, blank=True, default=None)

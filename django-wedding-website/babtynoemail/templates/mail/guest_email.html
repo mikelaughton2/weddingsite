@@ -9,7 +9,7 @@
 <mj-style>
   h3 {
     font-family: Palatino,serif;
-    color:#666;
+    color:{{email.font_colour}};
     padding-top:30px;
     font-size:35px;
     font-weight:bolder;
@@ -23,7 +23,7 @@
 {% endblock %}
 {% block email_body %}
 {% image email.hero_image original as hero_image %}
-<mj-section background-color="#fff3e8">
+<mj-section background-color="{{email.main_colour}}">
     <mj-column>
         <mj-image src="{{ hero_image.full_url }}"></mj-image>
         {% for b in email.body %}
