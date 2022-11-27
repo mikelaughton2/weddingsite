@@ -1,21 +1,20 @@
 # A Django Wedding Website and Invitation + Guest Management System
 
-Live site examples:
-
-- [Standard Wedding Website](http://rowena-and.coryzue.com/)
-- [Random Save The Date Email](http://rowena-and.coryzue.com/save-the-date/) (refresh for more examples)
-- [Sample Personal Invitation Page](http://rowena-and.coryzue.com/invite/b2ad24ec5dbb4694a36ef4ab616264e0/)
-
-There is also [a longer writeup on this project here](https://www.placecard.me/blog/django-wedding-website/).
+Based on [django-wedding-website](https://github.com/czue/django-wedding-website) - thank you!
 
 ## What's included?
 
 This includes everything we did for our own wedding:
 
 - A responsive, single-page traditional wedding website
+- New: Wagtail CMS to make the single-page website more customisable within the template
 - A complete guest management application
 - Email framework for sending save the dates
+- New: Models for emails to be able to send customisable save the dates
 - Email framework for invitations and built in RSVP system
+- Planned: Models for invitations to send customisable save the dates
+- New: MJML emails for better responsiveness
+- New: GUI for sending save-the-dates and invitations within the CMS instead of the command line
 - Guest dashboard
 
 More details on these below.
@@ -68,13 +67,14 @@ You can create multiple save the dates and send them out either randomly or by `
 invitations to some people and more playful ones to others).
 
 See `save_the_date.py` and `SAVE_THE_DATE_CONTEXT_MAP` for customizing your save the dates.
+PS:  SAVE_THE_DATE_CONTEXT_MAP is now generated from database entries.
 
 ### Invitations and RSVPs
 
 The app also comes with a built-in invitation system.
 The template is similar to the save-the-date template, however in addition to the standard invitation content it includes:
 
-- A built in tracking pixel to know whether someone has opened the email or not
+- A built in tracking pixel to know whether someone has opened the email or not (NB: this doesn't work anymore, I used MailGun instead)
 - Unique invitation URLs for each party with pre-populated guest names ([example](http://rownena-and.coryzue.com/invite/b2ad24ec5dbb4694a36ef4ab616264e0/))
 - Online RSVP system with meal selection and validation
 
@@ -95,7 +95,7 @@ You can easily hook up Google analytics by editing the tracking ID in `google-an
 
 ## Installation
 
-This is developed for Python 3 and Django 2.2.
+This is developed for Python 3 and Django 2.2. It works with Django 4.1 as well.
 
 It's recommended that you setup a virtualenv before development.
 
