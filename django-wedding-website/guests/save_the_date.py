@@ -78,10 +78,9 @@ def send_save_the_date_to_party(party, test_only=False):
         print(recipients)
         send_save_the_date_email(
             context,
-            bcc=recipients,
+            recipients,
             test_only=test_only
         )
-
 
 def get_template_id_from_party(party):
     if party.type == 'formal':
@@ -138,7 +137,7 @@ def send_save_the_date_email(context, recipients, test_only=False):
     template_text = ("Save the date for " + settings.BRIDE_AND_GROOM + "'s wedding! " + settings.WEDDING_DATE + ". " + settings.WEDDING_LOCATION)
     subject = 'Save the Date!'
     # https://www.vlent.nl/weblog/2014/01/15/sending-emails-with-embedded-images-in-django/
-    msg = EmailMultiAlternatives(subject, template_text, settings.DEFAULT_WEDDING_FROM_EMAIL, recipients, reply_to=[settings.DEFAULT_WEDDING_REPLY_EMAIL])
+    msg = EmailMultiAlternatives(subject, template_text, settings.DEFAULT_WEDDING_FROM_EMAIL, settings.DEFAULT_WEDDING_EMAIL, bcc=recipients, reply_to=[settings.DEFAULT_WEDDING_REPLY_EMAIL])
     msg.attach_alternative(template_html, "text/html")
     msg.mixed_subtype = 'related'
     for filename in (context['header_filename'], context['main_image']):
