@@ -141,8 +141,10 @@ def send_save_the_date_email(context, recipients, test_only=False):
     msg.attach_alternative(template_html, "text/html")
     msg.mixed_subtype = 'related'
     for filename in (context['header_filename'], context['main_image']):
-        #THIS PATH IS HARD CODED - YOU CANNOT GET AROUND IT!
-        attachment_path = os.path.join(settings.STATIC_ROOT, 'guests', 'save-the-date', 'images', filename)
+        #THIS PATH IS HARD CODED - YOU CANNOT GET AROUND IT! static_root/guests/save-the-date/images/
+        tpath = os.path.join(settings.STATIC_ROOT,'guests','save-the-date','images',filename)
+        if not os.path.exists(tpath):
+            raise Exception("This attachment does not exist")
         try:
             with open(attachment_path, "rb") as image_file:
                 msg_img = MIMEImage(image_file.read())
