@@ -165,8 +165,9 @@ cython_debug/
 <<<<<<< HEAD
 
 #django
-settings.py
-settings_local.py
+django-wedding-website/localsettings.py
+django-wedding-website/settings.py
+django-wedding-website/settings_local.py
 media/
 node_modules/
 =======
