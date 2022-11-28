@@ -165,8 +165,10 @@ cython_debug/
 <<<<<<< HEAD
 
 #django
+localsettings.py
 settings.py
 settings_local.py
+node_modules/
 media/
 =======
 >>>>>>> 4269de444d03f2fde54e7102486043a65ae03158
