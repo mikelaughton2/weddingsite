@@ -138,6 +138,7 @@ def send_save_the_date_email(context, recipients, test_only=False):
                 msg.attach(msg_img)
                 print("attached file fine")
         except:
+            raise Exception("This attachment does not exist!")
             print("error attaching file")
 
     print('sending {} to {}'.format(context['name'], ', '.join(recipients)))
