@@ -64,6 +64,9 @@ cover/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+settings.py
+localsettings.py
+settings_local.py
 
 # Flask stuff:
 instance/
@@ -165,8 +168,9 @@ cython_debug/
 <<<<<<< HEAD
 
 #django
-settings.py
-settings_local.py
+django-wedding-website/bigday/localsettings.py
+django-wedding-website/bigday/settings.py
+django-wedding-website/bigday/settings_local.py
 media/
 node_modules/
 =======
