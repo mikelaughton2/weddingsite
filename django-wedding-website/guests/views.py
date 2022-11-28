@@ -136,7 +136,7 @@ def save_the_dates_send(request):
         form = ConfirmForm(request.POST)
         if form.is_valid():
             send_all_save_the_dates(mark_as_sent=True)
-        return HttpResponse("Sent! {}")
+        return HttpResponse("Sent!")
     else:
         form = ConfirmForm()
         return render(request,"guests/proforma.html",context={'form':form})
