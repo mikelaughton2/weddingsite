@@ -12,7 +12,8 @@ class PartyAdmin(ModelAdmin):
     menu_order = 200
     add_to_settings_menu = False
     exclude_from_explorer = False
-    list_display = ("name","guest_set")
+    list_display = ("name","guest_emails","any_guests_attending")
+    search_fields = ("name",)
 
 class GuestAdmin(ModelAdmin):
     model = Guest
@@ -21,7 +22,9 @@ class GuestAdmin(ModelAdmin):
     menu_order = 201
     add_to_settings_menu = False
     exclude_from_explorer = False
-    list_display = ("name","party",)
+    list_display = ("first_name","last_name","party","email")
+    search_fields=("first_name","last_name","party","email")
+    list_filter=("party",)
 
 class PartyGuest(ModelAdminGroup):
     menu_label = "Guests"
