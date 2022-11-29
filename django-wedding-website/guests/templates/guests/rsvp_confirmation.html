@@ -6,13 +6,12 @@
 {% block page_content %}
     <div class="layer"></div>
     <div class="container" id="main">
-        <h2>Hi {{ party.name }}! Thanks for your response!</h2>
+        <h2>Hi/Sveiki {{ party.name }}! Thanks for your response! Dėkojame už atsakymą!</h2>
         {% if party.any_guests_attending %}
             <p>
                 We can't wait to celebrate with you!
             </p>
             <p>
-                If you've got a minute, you can help us out by filling in a <a href="http://goo.gl/forms/AFszTcpPRW">super quick survey</a> that will help us plan for the most fun and smooth event possible.
                 If you have any other questions, don't hesitate to email us at <a href="mailto:{{ support_email }}">{{ support_email }}</a>.
             </p>
         {% else %}
@@ -24,7 +23,7 @@
             </p>
         {% endif %}
         <p>
-            - Cory and Rowena
+            - {{BRIDE_AND_GROOM}}
         </p>
     </div>
 {% endblock %}
