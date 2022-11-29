@@ -12,7 +12,7 @@ class PartyAdmin(ModelAdmin):
     menu_order = 200
     add_to_settings_menu = False
     exclude_from_explorer = False
-    list_display = ("name",)
+    list_display = ("name","guest_set")
 
 class GuestAdmin(ModelAdmin):
     model = Guest
