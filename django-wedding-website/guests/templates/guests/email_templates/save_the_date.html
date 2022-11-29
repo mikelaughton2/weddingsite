@@ -1,8 +1,6 @@
 {% extends 'guests/email_templates/email_base.html' %}
 {% load static %}
 {% block main_image %}
-    <a href="{{ site_url }}"
-       {% if email_mode %}target="_blank"{% endif %}>
     {% with "guests/save-the-date/images/"|add:main_image as main_static_url %}
         <img src="{% if email_mode %}cid:{{ main_image }}{% else %}{% static main_static_url %}{% endif %}"
              alt="{{ couple }}"
@@ -10,7 +8,6 @@
              class="img-max" border="0"
              height="400" width="500">
     {% endwith %}
-    </a>
 {% endblock %}
 {% block main_copy %}
     <table border="0" width="100%" cellpadding="0" cellspacing="0">

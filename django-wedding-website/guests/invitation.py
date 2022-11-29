@@ -7,6 +7,8 @@ from django.urls import reverse
 from django.http import Http404
 from django.template.loader import render_to_string
 from guests.models import Party, MEALS
+from guests.save_the_date import get_site_password as get_site_pwd
+from bigday import settings
 
 INVITATION_TEMPLATE = 'guests/email_templates/invitation.html'
 
@@ -33,6 +35,7 @@ def get_invitation_context(party):
         'invitation_id': party.invitation_id,
         'party': party,
         'meals': MEALS,
+        'site_pwd': get_site_pwd()
     }
 
 
@@ -61,6 +64,8 @@ def send_invitation_email(party, test_only=False, recipients=None):
     msg.mixed_subtype = 'related'
     for filename in (context['main_image'], ):
         attachment_path = os.path.join(os.path.dirname(__file__), 'static', 'invitation', 'images', filename)
+        if not os.path.exists(attachment_path):
+            raise Exception("Attachment does not exist")
         with open(attachment_path, "rb") as image_file:
             msg_img = MIMEImage(image_file.read())
             msg_img.add_header('Content-ID', '<{}>'.format(filename))
