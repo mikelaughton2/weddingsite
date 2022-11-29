@@ -1,10 +1,12 @@
-{% extends "wagtailadmin/base.html" %}
-
-{% block titletag %} Send save the dates? {%endblock%}
+{% extends "guests/admin_message.html" %}
+{% block titletag %} Send save the dates? {% endblock %}
 {% block content %}
+{% include "wagtailadmin/shared/header.html" with title=title icon="envelope" %}
+<div class="nice-padding">
 <form method="post">
-{{form.as_table}}
+{{form.as_p}}
 {% csrf_token %}
 <input type="Submit" value="Submit">
 </form>
+</div>
 {% endblock %}

@@ -147,10 +147,12 @@ def save_the_dates_send(request):
             context['message']+="<p>"
             context['message']+="Marked sent" if mark_sent else "Not marked sent"
             context['message']+="</p>"
-        return render(request,"guests/admin_message.html",context=context)
+        return render(request,"guests/admin_message.html",
+            context=context)
     else:
         form = ConfirmForm()
-        return render(request,"guests/proforma.html",context={'form':form})
+        return render(request,"guests/proforma.html",
+            context={'form':form,'title':'Send save the dates?'})
 
 #This will break
 def save_the_date_random(request):

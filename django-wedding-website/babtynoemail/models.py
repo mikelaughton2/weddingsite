@@ -8,6 +8,7 @@ from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.models import Page, Orderable
 from django import forms
+from django.urls import reverse
 from bigday import settings
 
 class SaveTheDateEmail(models.Model):
@@ -44,5 +45,7 @@ class SaveTheDateEmail(models.Model):
         FieldPanel('hero_image',help_text="Pretty image"),
     ]
 
+    def get_absolute_url(self):
+        return reverse('save-the-date',args=[str(self.id)])
     def __str__(self):
         return "{}".format(self.title)
