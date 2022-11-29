@@ -51,6 +51,9 @@ The `Guest` model contains all of your individual guests.
 In addition to standard name/email it has fields to represent whether the guest is a child (for kids meals/pricing differences),
 and, after sending invitations, marking whether the guest is attending and what meal they are having.
 
+### GuestEmail model
+TBD
+
 #### Excel import/export
 
 The guest list can be imported and exported via excel (csv).
@@ -68,6 +71,13 @@ invitations to some people and more playful ones to others).
 
 See `save_the_date.py` and `SAVE_THE_DATE_CONTEXT_MAP` for customizing your save the dates.
 PS:  SAVE_THE_DATE_CONTEXT_MAP is now generated from database entries.
+
+### Sending save the dates
+The app comes with a very simple interface to send out save the dates when you're done.
+
+Options: test-only, mark-as-sent.
+
+Sending individual ones means going into `django-admin` and importing functions from `save_the_date.py`. Working on that...
 
 ### Invitations and RSVPs
 
@@ -109,8 +119,10 @@ python manage.py runserver
 
 ## Customization
 
-I recommend forking this project and just manually modifying it by hand to replace everything with what you want.
+I *still* recommend recommend forking this project and just manually modifying it by hand to replace everything with what you want.
 Searching for the text on a page in the repository is a great way to find where something lives.
+
+However, in due course I hope that this will be essentially plug-in-and-play.
 
 ### Sending email
 
@@ -118,13 +130,12 @@ This application uses Django's email framework for sending mail.
 You need to modify the `EMAIL_HOST`, `EMAIL_PORT` and other associated variables in `settings.py` in order
 to hook it into a real server.
 
-This [thread on stack overflow](https://stackoverflow.com/questions/6367014/how-to-send-email-via-django)
-is a good starting place for learning how to connect to a real mail service.
+Recommend you plug into MailGun, SendGrid, or other type of mail service.
 
 ### Email addresses
 
 To customize the email addresses, see the `DEFAULT_WEDDING_FROM_EMAIL` and
-`DEFAULT_WEDDING_REPLY_EMAIL` variables in `settings.py`.
+`DEFAULT_WEDDING_REPLY_EMAIL` variables in `localsettings.py`.
 
 ### Other customizations
 
@@ -134,4 +145,5 @@ for anything you encounter and I'm happy to help.
 I haven't built out more complete customization docs yet because I wasn't sure anyone would be interested in this,
 but will add to these instructions whenever I get questions!
 
--Cory
+-Mike 
+-Based on Cory linked above, including liberally borrowing from his README.
