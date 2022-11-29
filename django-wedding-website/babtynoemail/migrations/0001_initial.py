@@ -11,7 +11,6 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('birdsong', '0006_auto_20220428_0558'),
     ]
 
     operations = [
