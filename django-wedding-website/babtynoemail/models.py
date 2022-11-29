@@ -44,5 +44,5 @@ class SaveTheDateEmail(models.Model):
         FieldPanel('hero_image',help_text="Pretty image"),
     ]
 
-    def __str(self):
-        return "{}, ({})".format(self.title,self.language)
+    def __str__(self):
+        return "{}".format(self.title)
