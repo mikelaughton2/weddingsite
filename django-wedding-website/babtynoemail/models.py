@@ -47,5 +47,46 @@ class SaveTheDateEmail(models.Model):
 
     def get_absolute_url(self):
         return reverse('save-the-date',args=[str(self.id)])
+
+    def __str__(self):
+        return "{}".format(self.title)
+
+class RSVPEmail(models.Model):
+    title = models.CharField(max_length=200,null=True)
+    language = models.CharField(max_length=25,choices=settings.WAGTAIL_CONTENT_LANGUAGES,default=settings.WAGTAIL_CONTENT_LANGUAGES[0])
+    header_image = models.ForeignKey('wagtailimages.Image',null=True,blank=True,on_delete=models.SET_NULL,related_name="+")
+    subject = models.CharField(max_length=200,null=True)
+    main_colour = models.CharField(max_length=9,default="#FFFFFF")
+    font_colour = models.CharField(max_length=9,default="#000000")
+    colour_widget = forms.TextInput(
+        attrs = {
+            'placeholder':'#FFFFFF',
+            'type':'color',
+        }
+    )
+    body = StreamField(
+        [
+        ('body',blocks.RichTextBlock(features=['h3','h4','bold','italic','link','ul','ol','document-link']))
+        ],
+        use_json_field=True
+    )
+    hero_image = models.ForeignKey('wagtailimages.Image',null=True,blank=True,on_delete=models.SET_NULL,related_name="+")
+    panels = [
+        FieldPanel('title',help_text="Name of email (internal only)"),
+        FieldPanel('subject',help_text="Subject line - recipient sees this"),
+        FieldPanel('header_image',help_text="Cute lil photo"),
+        FieldRowPanel(
+            [
+                FieldPanel('main_colour',help_text="Main/background colour",widget=colour_widget),
+                FieldPanel('font_colour',help_text="Text colour",widget=colour_widget)
+            ]
+                ),
+        FieldPanel('body',help_text="Text of email"),
+        FieldPanel('hero_image',help_text="Pretty image"),
+    ]
+
+    def get_absolute_url(self):
+        return reverse('save-the-date',args=[str(self.id)])
+
     def __str__(self):
         return "{}".format(self.title)
