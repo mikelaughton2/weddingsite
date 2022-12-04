@@ -38,5 +38,4 @@ class RSVPDateEmail(ModelAdmin):
     menu_label = 'RSVP Emails'
     menu_icon = 'mail'
     menu_order = 400
-    button_helper_class = SaveTheDateButtons
     #button_helper_class = SaveTheDateButtons
