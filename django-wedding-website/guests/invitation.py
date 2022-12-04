@@ -7,12 +7,9 @@ from django.urls import reverse
 from django.http import Http404
 from django.template.loader import render_to_string
 from guests.models import Party, MEALS
-<<<<<<< HEAD
+from django.utils.translation import gettext as _
 from guests.save_the_date import get_site_password as get_site_pwd
 from bigday import settings
-=======
-from django.utils.translation import gettext as _
->>>>>>> alpha
 
 INVITATION_TEMPLATE = 'mail/guest_email.html'
 
