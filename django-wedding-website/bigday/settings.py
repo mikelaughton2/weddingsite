@@ -34,7 +34,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 INSTALLED_APPS = [
     'babtyno',
-
+    'babtynoemail',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -57,6 +57,8 @@ INSTALLED_APPS = [
     'wagtail.contrib.modeladmin',
     'modelcluster',
     'taggit',
+    'mjml',
+    
 ]
 
 MIDDLEWARE = [

@@ -4,15 +4,29 @@ from email.mime.image import MIMEImage
 import os
 from datetime import datetime
 import random
-
+from django.utils.translation import gettext as _
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.shortcuts import get_object_or_404
 from guests.models import Party
 from babtyno.models import HomePage
+from babtynoemail.models import SaveTheDateEmail as STD
+
+SAVE_THE_DATE_TEMPLATE = 'mail/guest_email.html'
 
 
-SAVE_THE_DATE_TEMPLATE = 'guests/email_templates/save_the_date.html'
+# SAVE_THE_DATE_CONTEXT_MAP = {
+#
+#     'title': 'whatever-the-database-says',
+#     'hero-image': 'whatever-the-database-says',
+#     'main colour': 'whatever the database says',
+#     'text colour': 'whatever the database says',
+# }
+
+# Get template from Party needs to be reformed to select choose from a guest email in the database
+
+#Delete this
 SAVE_THE_DATE_CONTEXT_MAP = {
         'lions-head': {
             'title': "Lion's Head",
@@ -68,7 +82,6 @@ def send_all_save_the_dates(test_only=False, mark_as_sent=False):
             party.save_the_date_sent = datetime.now()
             party.save()
 
-
 def send_save_the_date_to_party(party, test_only=False):
     context = get_save_the_date_context(get_template_id_from_party(party))
     recipients = party.guest_emails
@@ -83,8 +96,11 @@ def send_save_the_date_to_party(party, test_only=False):
         )
 
 def get_template_id_from_party(party):
-    #ONE AND ONLY ONE FOR THE PURPOSES OF ME SENDING THIS OUT TONIGHT
-    return 'lions-head'
+    #Dummy function for now - return the pk of the first obj
+    try:
+        return get_object_or_404(SaveTheDateEmail,pk=party.pk)
+    except:
+        return STD.objects.first().id
 
 def get_site_password():
     #Return the site passsword or none (handle none in template)
@@ -96,41 +112,40 @@ def get_site_password():
         return ''
 
 def get_save_the_date_context(template_id):
-    template_id = (template_id or '').lower()
-    if template_id not in SAVE_THE_DATE_CONTEXT_MAP:
-        template_id = 'lions-head'
-    context = copy(SAVE_THE_DATE_CONTEXT_MAP[template_id])
-    context['name'] = template_id
+    template = get_object_or_404(STD,pk=template_id)
+    context = {
+        'email':template,
+    }
+    context['title']=template.title
+    context['header_filename']=template.header_image
+    context['main_image']=template.hero_image
+    #note en-gb v. en-ca from original
+    context['main_color']=template.main_colour
+    context['font_color']=template.font_colour
     context['rsvp_address'] = settings.DEFAULT_WEDDING_REPLY_EMAIL
     context['site_url'] = settings.WEDDING_WEBSITE_URL
     context['couple'] = settings.BRIDE_AND_GROOM
     context['location'] = settings.WEDDING_LOCATION
     context['date'] = settings.WEDDING_DATE
-    context['page_title'] = (settings.BRIDE_AND_GROOM + ' - Save the Date!')
+    context['page_title'] = (settings.BRIDE_AND_GROOM + _(' - Save the Date!'))
     context['site_pwd'] = get_site_password()
-    context['preheader_text'] = (
-        "The date that you've eagerly been waiting for is finally here. " + settings.BRIDE_AND_GROOM + " are getting married! Save the date!"
-    )
     return context
 
-
 def send_save_the_date_email(context, recipients, test_only=False):
+    print(context)
     context['email_mode'] = True
     context['rsvp_address'] = settings.DEFAULT_WEDDING_REPLY_EMAIL
     context['site_url'] = settings.WEDDING_WEBSITE_URL
     context['couple'] = settings.BRIDE_AND_GROOM
     template_html = render_to_string(SAVE_THE_DATE_TEMPLATE, context=context)
     template_text = ("Save the date for " + settings.BRIDE_AND_GROOM + "'s wedding! " + settings.WEDDING_DATE + ". " + settings.WEDDING_LOCATION)
-    subject = 'Save the Date! | Rezervuokite datą'
+    subject = context['email'].subject
     # https://www.vlent.nl/weblog/2014/01/15/sending-emails-with-embedded-images-in-django/
-    msg = EmailMultiAlternatives(subject, template_text, settings.DEFAULT_WEDDING_FROM_EMAIL, [settings.DEFAULT_WEDDING_EMAIL], bcc=recipients, reply_to=[settings.DEFAULT_WEDDING_REPLY_EMAIL])
+    msg = EmailMultiAlternatives(subject, template_text, settings.DEFAULT_WEDDING_FROM_EMAIL, bcc=recipients, reply_to=[settings.DEFAULT_WEDDING_REPLY_EMAIL])
     msg.attach_alternative(template_html, "text/html")
     msg.mixed_subtype = 'related'
     for filename in (context['header_filename'], context['main_image']):
-        #THIS PATH IS HARD CODED - YOU CANNOT GET AROUND IT! static_root/guests/save-the-date/images/
-        tpath = os.path.join(settings.STATIC_ROOT,'guests','save-the-date','images',filename)
-        if not os.path.exists(tpath):
-            raise Exception("This attachment does not exist")
+        attachment_path = filename.file.path
         try:
             with open(tpath, "rb") as image_file:
                 msg_img = MIMEImage(image_file.read())
@@ -141,7 +156,6 @@ def send_save_the_date_email(context, recipients, test_only=False):
             raise Exception("This attachment does not exist!")
             print("error attaching file")
 
-    print('sending {} to {}'.format(context['name'], ', '.join(recipients)))
     if not test_only:
         msg.send()
 

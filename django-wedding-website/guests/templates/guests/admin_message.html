@@ -1,0 +1,10 @@
+{% extends "wagtailadmin/base.html" %}
+{% block titletag %} {{ title }} {%endblock%}
+{% block content %}
+ {% include "wagtailadmin/shared/header.html" with title=title icon="date" %}
+<div class="nice-padding">
+{%autoescape off%}
+{{ message }}
+{% endautoescape %}
+</div>
+{% endblock %}

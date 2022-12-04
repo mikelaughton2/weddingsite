@@ -1,21 +1,20 @@
 # A Django Wedding Website and Invitation + Guest Management System
 
-Live site examples:
-
-- [Standard Wedding Website](http://rowena-and.coryzue.com/)
-- [Random Save The Date Email](http://rowena-and.coryzue.com/save-the-date/) (refresh for more examples)
-- [Sample Personal Invitation Page](http://rowena-and.coryzue.com/invite/b2ad24ec5dbb4694a36ef4ab616264e0/)
-
-There is also [a longer writeup on this project here](https://www.placecard.me/blog/django-wedding-website/).
+Based on [django-wedding-website](https://github.com/czue/django-wedding-website) - thank you!
 
 ## What's included?
 
 This includes everything we did for our own wedding:
 
 - A responsive, single-page traditional wedding website
+- New: Wagtail CMS to make the single-page website more customisable within the template
 - A complete guest management application
 - Email framework for sending save the dates
+- New: Models for emails to be able to send customisable save the dates
 - Email framework for invitations and built in RSVP system
+- Planned: Models for invitations to send customisable save the dates
+- New: MJML emails for better responsiveness
+- New: GUI for sending save-the-dates and invitations within the CMS instead of the command line
 - Guest dashboard
 
 More details on these below.
@@ -52,6 +51,9 @@ The `Guest` model contains all of your individual guests.
 In addition to standard name/email it has fields to represent whether the guest is a child (for kids meals/pricing differences),
 and, after sending invitations, marking whether the guest is attending and what meal they are having.
 
+### GuestEmail model
+TBD
+
 #### Excel import/export
 
 The guest list can be imported and exported via excel (csv).
@@ -68,13 +70,21 @@ You can create multiple save the dates and send them out either randomly or by `
 invitations to some people and more playful ones to others).
 
 See `save_the_date.py` and `SAVE_THE_DATE_CONTEXT_MAP` for customizing your save the dates.
+PS:  SAVE_THE_DATE_CONTEXT_MAP is now generated from database entries.
+
+### Sending save the dates
+The app comes with a very simple interface to send out save the dates when you're done.
+
+Options: test-only, mark-as-sent.
+
+Sending individual ones means going into `django-admin` and importing functions from `save_the_date.py`. Working on that...
 
 ### Invitations and RSVPs
 
 The app also comes with a built-in invitation system.
 The template is similar to the save-the-date template, however in addition to the standard invitation content it includes:
 
-- A built in tracking pixel to know whether someone has opened the email or not
+- A built in tracking pixel to know whether someone has opened the email or not (NB: this doesn't work anymore, I used MailGun instead)
 - Unique invitation URLs for each party with pre-populated guest names ([example](http://rownena-and.coryzue.com/invite/b2ad24ec5dbb4694a36ef4ab616264e0/))
 - Online RSVP system with meal selection and validation
 
@@ -95,7 +105,7 @@ You can easily hook up Google analytics by editing the tracking ID in `google-an
 
 ## Installation
 
-This is developed for Python 3 and Django 2.2.
+This is developed for Python 3 and Django 2.2. It works with Django 4.1 as well.
 
 It's recommended that you setup a virtualenv before development.
 
@@ -109,8 +119,10 @@ python manage.py runserver
 
 ## Customization
 
-I recommend forking this project and just manually modifying it by hand to replace everything with what you want.
+I *still* recommend recommend forking this project and just manually modifying it by hand to replace everything with what you want.
 Searching for the text on a page in the repository is a great way to find where something lives.
+
+However, in due course I hope that this will be essentially plug-in-and-play.
 
 ### Sending email
 
@@ -118,13 +130,12 @@ This application uses Django's email framework for sending mail.
 You need to modify the `EMAIL_HOST`, `EMAIL_PORT` and other associated variables in `settings.py` in order
 to hook it into a real server.
 
-This [thread on stack overflow](https://stackoverflow.com/questions/6367014/how-to-send-email-via-django)
-is a good starting place for learning how to connect to a real mail service.
+Recommend you plug into MailGun, SendGrid, or other type of mail service.
 
 ### Email addresses
 
 To customize the email addresses, see the `DEFAULT_WEDDING_FROM_EMAIL` and
-`DEFAULT_WEDDING_REPLY_EMAIL` variables in `settings.py`.
+`DEFAULT_WEDDING_REPLY_EMAIL` variables in `localsettings.py`.
 
 ### Other customizations
 
@@ -134,4 +145,5 @@ for anything you encounter and I'm happy to help.
 I haven't built out more complete customization docs yet because I wasn't sure anyone would be interested in this,
 but will add to these instructions whenever I get questions!
 
--Cory
+-Mike 
+-Based on Cory linked above, including liberally borrowing from his README.

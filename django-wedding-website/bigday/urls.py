@@ -12,10 +12,11 @@ urlpatterns = [
     #re_path(r'^', include('wedding.urls')),
     re_path(r'^guests/', include('guests.urls')),
     re_path(r'^admin/', admin.site.urls),
-    re_path('^accounts/', include('django.contrib.auth.urls')),
+    re_path(r'^accounts/', include('django.contrib.auth.urls')),
+    re_path(r'^email_prev/',include('babtynoemail.urls')),
     #wagtail
-    re_path('cms/', include(wagtailadmin_urls)),
-    re_path('documents/', include(wagtaildocs_urls)),
-    re_path('^', include(wagtail_urls)),
+    re_path(r'cms/', include(wagtailadmin_urls)),
+    re_path(r'documents/', include(wagtaildocs_urls)),
+    re_path(r'^', include(wagtail_urls)),
     #end wagtail
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

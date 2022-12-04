@@ -16,6 +16,7 @@ from guests.models import Guest, MEALS, Party
 from guests.save_the_date import get_save_the_date_context, send_save_the_date_email, SAVE_THE_DATE_TEMPLATE, \
     SAVE_THE_DATE_CONTEXT_MAP, send_all_save_the_dates
 from .forms import ConfirmForm
+from babtynoemail.models import RSVPEmail
 
 class GuestListView(ListView):
     model = Guest
@@ -118,13 +119,18 @@ def rsvp_confirm(request, invite_id=None):
     return render(request, template_name='guests/rsvp_confirmation.html', context={
         'party': party,
         'support_email': settings.DEFAULT_WEDDING_REPLY_EMAIL,
+        'couple': settings.BRIDE_AND_GROOM,
     })
 
 
 @login_required
 def invitation_email_preview(request, invite_id):
     party = guess_party_by_invite_id_or_404(invite_id)
+    #For now
+    email = RSVPEmail.objects.first()
     context = get_invitation_context(party)
+    context['email']=email
+    context['invite_id'] = invite_id
     return render(request, INVITATION_TEMPLATE, context=context)
 
 
@@ -139,12 +145,25 @@ def save_the_dates_send(request):
     if request.method == "POST":
         form = ConfirmForm(request.POST)
         if form.is_valid():
-            send_all_save_the_dates(mark_as_sent=True)
-        return HttpResponse("Sent!")
+            test_only = form.cleaned_data['test_only']
+            mark_sent = form.cleaned_data['mark_sent']
+            send_all_save_the_dates(test_only = test_only,mark_as_sent=mark_sent)
+            context = {}
+            context['title']="Successful test" if test_only else "Sent!"
+            context['message']="<p>"
+            context['message']+="Sent!" if not test_only else "Successful test"
+            context['message']+="</p>"
+            context['message']+="<p>"
+            context['message']+="Marked sent" if mark_sent else "Not marked sent"
+            context['message']+="</p>"
+        return render(request,"guests/admin_message.html",
+            context=context)
     else:
         form = ConfirmForm()
-        return render(request,"guests/proforma.html",context={'form':form})
+        return render(request,"guests/proforma.html",
+            context={'form':form,'title':'Send save the dates?'})
 
+#This will break
 def save_the_date_random(request):
     template_id = random.choice(SAVE_THE_DATE_CONTEXT_MAP.keys())
     return save_the_date_preview(request, template_id)
