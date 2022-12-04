@@ -40,7 +40,7 @@ class RSVPDateEmail(ModelAdmin):
     menu_order = 400
     #button_helper_class = SaveTheDateButtons
 
-hooks.register('register_admin_url')
+@hooks.register('register_admin_url')
 def register_invitation():
         return [
             path('send_rsvps',rsvps_send,name='send_rsvps'),
