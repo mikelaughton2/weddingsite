@@ -40,3 +40,13 @@ def register_send_stds():
 @hooks.register('register_admin_menu_item')
 def register_send_stds_menu_item():
     return MenuItem('Send STDs',reverse('send-save-the-dates'),icon_name='date')
+
+@hooks.register('register_admin_url')
+def register_invitation():
+        return [
+            path('send_rsvps',rsvps_send,name='send_rsvps'),
+        ]
+
+@hooks.register('regsiter_admin_menu_item')
+def register_rsvp_send_menu_item():
+    return MenuItem('Send RSVPs',reverse('send-rsvps'),icon_name='envelope'),

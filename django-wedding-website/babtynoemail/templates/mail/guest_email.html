@@ -25,6 +25,12 @@
 {% image email.hero_image original as hero_image %}
 <mj-section background-color="{{email.main_colour}}">
     <mj-column>
+        <mj-text align="center">
+        {% if invite_id %}
+        {% url 'rsvp-confirm' invite_id=invite_id as the_url %}
+        <a href="{{the_url}}">RSVP here</a>
+        {% endif %}
+        </mj-text>
         <mj-image src="{{ hero_image.full_url }}"></mj-image>
         {% for b in email.body %}
         <mj-text>{{b}}</mj-text>

@@ -1,23 +1,13 @@
-{% extends 'babtyno/templates/mail/base_email.html' %}
+{% extends 'mail/base_email.html' %}
 {% load static %}
 {% block header_image %}{% endblock %}
 {% block lead_copy %}
-    <tr>
-        <td>
-            <table border="0" cellpadding="0" cellspacing="0" align="center">
-                <tbody>
-                <tr>
-                    <td>
-                        <a href="{% if email_mode %}{{ site_url }}{% endif %}{% url 'invitation' invitation_id %}" target="_blank"
-                           style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; background-color: #337ab7; border-top: 12px solid #337ab7; border-bottom: 12px solid #337ab7; border-right: 18px solid #337ab7; border-left: 18px solid #337ab7; display: inline-block;">
-                            View Invitation | Peržiūrėti kvietimą
-                        </a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </td>
-    </tr>
+  <mj-column>
+    <a href="{% if email_mode %}{{ site_url }}{% endif %}{% url 'invitation' invitation_id %}" target="_blank"
+       style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; background-color: #337ab7; border-top: 12px solid #337ab7; border-bottom: 12px solid #337ab7; border-right: 18px solid #337ab7; border-left: 18px solid #337ab7; display: inline-block;">
+        View Invitation | Peržiūrėti kvietimą
+    </a>
+</mj-column>
 {% endblock %}
 {% block main_image %}
     {% with "invitation/images/"|add:main_image as main_static_url %}

@@ -9,7 +9,7 @@ from django.template.loader import render_to_string
 from guests.models import Party, MEALS
 from django.utils.translation import gettext as _
 
-INVITATION_TEMPLATE = 'guests/email_templates/invitation.html'
+INVITATION_TEMPLATE = 'mail/guest_email.html'
 
 
 def guess_party_by_invite_id_or_404(invite_id):
@@ -66,7 +66,6 @@ def send_invitation_email(party, test_only=False, recipients=None):
             msg_img = MIMEImage(image_file.read())
             msg_img.add_header('Content-ID', '<{}>'.format(filename))
             msg.attach(msg_img)
-
     print ('sending invitation to {} ({})'.format(party.name, ', '.join(recipients)))
     if not test_only:
         msg.send()

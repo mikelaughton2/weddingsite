@@ -4,7 +4,7 @@ from wagtail import hooks
 from wagtail.admin.menu import MenuItem
 from django.urls import path, reverse
 
-from .models import SaveTheDateEmail
+from .models import SaveTheDateEmail,RSVPEmail
 
 class SaveTheDateButtons(ButtonHelper):
     view_button_classnames = ["button-small","icon","icon-site"]
@@ -23,7 +23,7 @@ class SaveTheDateButtons(ButtonHelper):
         if 'view' not in (exclude or []):
             btns.append(self.view_button(obj))
         return btns
-        
+
 @modeladmin_register
 class SaveTheDateEmail(ModelAdmin):
     model = SaveTheDateEmail
@@ -31,3 +31,12 @@ class SaveTheDateEmail(ModelAdmin):
     menu_icon = 'mail'
     menu_order = 300
     button_helper_class = SaveTheDateButtons
+
+@modeladmin_register
+class RSVPDateEmail(ModelAdmin):
+    model = RSVPEmail
+    menu_label = 'RSVP Emails'
+    menu_icon = 'mail'
+    menu_order = 400
+    button_helper_class = SaveTheDateButtons
+    #button_helper_class = SaveTheDateButtons

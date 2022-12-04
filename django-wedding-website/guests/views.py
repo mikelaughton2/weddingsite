@@ -16,6 +16,7 @@ from guests.models import Guest, MEALS, Party
 from guests.save_the_date import get_save_the_date_context, send_save_the_date_email, SAVE_THE_DATE_TEMPLATE, \
     SAVE_THE_DATE_CONTEXT_MAP, send_all_save_the_dates
 from .forms import ConfirmForm
+from babtynoemail.models import RSVPEmail
 
 class GuestListView(ListView):
     model = Guest
@@ -121,7 +122,11 @@ def rsvp_confirm(request, invite_id=None):
 @login_required
 def invitation_email_preview(request, invite_id):
     party = guess_party_by_invite_id_or_404(invite_id)
+    #For now
+    email = RSVPEmail.objects.first()
     context = get_invitation_context(party)
+    context['email']=email
+    context['invite_id'] = invite_id
     return render(request, INVITATION_TEMPLATE, context=context)
 
 
