@@ -86,7 +86,7 @@ class RSVPEmail(models.Model):
     ]
 
     def get_absolute_url(self):
-        return reverse('save-the-date',args=[str(self.id)])
+        return reverse('invitation-email',args=[str(self.id)])
 
     def __str__(self):
         return "{}".format(self.title)
