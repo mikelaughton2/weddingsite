@@ -9,7 +9,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('wagtailimages', '0024_index_image_file_hash'),
-        ('babtynoemail', '0002_guestemail_hero_image'),
     ]
 
     operations = [
@@ -20,8 +19,5 @@ class Migration(migrations.Migration):
                 ('body', wagtail.fields.RichTextField()),
                 ('hero_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtailimages.image')),
             ],
-        ),
-        migrations.DeleteModel(
-            name='GuestEmail',
         ),
     ]

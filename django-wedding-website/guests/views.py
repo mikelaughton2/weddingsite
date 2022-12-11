@@ -14,7 +14,7 @@ from guests.invitation import get_invitation_context, INVITATION_TEMPLATE, guess
     send_invitation_email, get_RSVP_template_from_party
 from guests.models import Guest, MEALS, Party
 from guests.save_the_date import get_save_the_date_context, send_save_the_date_email, SAVE_THE_DATE_TEMPLATE, \
-    SAVE_THE_DATE_CONTEXT_MAP, send_all_save_the_dates
+    send_all_save_the_dates
 from .forms import ConfirmForm
 from django.utils.translation import gettext as _
 from babtynoemail.models import RSVPEmail
@@ -130,7 +130,7 @@ def rsvp_confirm(request, invite_id=None):
 def invitation_email_preview(request, invite_id):
     party = guess_party_by_invite_id_or_404(invite_id)
     #For now
-    email = RSVPEmail.objects.first()
+    email = get_RSVP_template_from_party(party)
     context = get_invitation_context(party)
     context['email']=email
     context['invite_id'] = invite_id
@@ -189,12 +189,6 @@ def rsvp_send(request,party_pk):
         form = ConfirmForm()
         return render(request,"guests/proforma.html",
             context={'form':form,'title':_('Send RSVP to {}?'.format(party_instance.guest_emails)),'party':party_instance})
-
-#This will break
-def save_the_date_random(request):
-    template_id = random.choice(SAVE_THE_DATE_CONTEXT_MAP.keys())
-    return save_the_date_preview(request, template_id)
-
 
 def save_the_date_preview(request, template_id):
     context = get_save_the_date_context(template_id)

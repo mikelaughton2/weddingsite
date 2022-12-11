@@ -26,53 +26,6 @@ SAVE_THE_DATE_TEMPLATE = 'mail/guest_email.html'
 
 # Get template from Party needs to be reformed to select choose from a guest email in the database
 
-#Delete this
-SAVE_THE_DATE_CONTEXT_MAP = {
-        'lions-head': {
-            'title': "Lion's Head",
-            'header_filename': 'hearts.png',
-            'main_image': 'lions-head.jpg',
-            'main_color': '#fff3e8',
-            'font_color': '#666666',
-        },
-        'ski-trip': {
-            'title': 'Ski Trip',
-            'header_filename': 'hearts.png',
-            'main_image': 'ski-trip.jpg',
-            'main_color': '#330033',
-            'font_color': '#ffffff',
-        },
-        'canada': {
-            'title': 'Canada!',
-            'header_filename': 'maple-leaf.png',
-            'main_image': 'canada-cartoon-resized.jpg',
-            'main_color': '#ea2e2e',
-            'font_color': '#e5ddd9',
-        },
-        'american-gothic': {
-            'title': 'American Gothic',
-            'header_filename': 'hearts.png',
-            'main_image': 'american-gothic.jpg',
-            'main_color': '#b6ccb5',
-            'font_color': '#000000',
-        },
-        'plunge': {
-            'title': 'The Plunge',
-            'header_filename': 'plunger.png',
-            'main_image': 'plunge.jpg',
-            'main_color': '#b4e6ff',
-            'font_color': '#000000',
-        },
-        'dimagi': {
-            'title': 'Dimagi',
-            'header_filename': 'commcare.png',
-            'main_image': 'join-us.jpg',
-            'main_color': '#003d71',
-            'font_color': '#d6d6d4',
-        }
-    }
-
-
 def send_all_save_the_dates(test_only=False, mark_as_sent=False):
     to_send_to = Party.in_default_order().filter(is_invited=True, save_the_date_sent=None)
     for party in to_send_to:
@@ -96,7 +49,7 @@ def send_save_the_date_to_party(party, test_only=False):
         )
 
 def get_template_id_from_party(party):
-    #Dummy function for now - return the pk of the first obj
+    #Either return template ID for party, or give them the default one.
     try:
         return get_object_or_404(SaveTheDateEmail,pk=party.pk)
     except:

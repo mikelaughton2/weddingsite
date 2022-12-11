@@ -17,6 +17,9 @@ INVITATION_TEMPLATE = 'mail/guest_email.html'
 
 
 def guess_party_by_invite_id_or_404(invite_id):
+    #Return appropriate party by their invite ID.
+    #This should succeed if there's a valid ID.
+    #It should return a 404 if there is not.
     try:
         return Party.objects.get(invitation_id=invite_id)
     except Party.DoesNotExist:
@@ -26,26 +29,13 @@ def guess_party_by_invite_id_or_404(invite_id):
         else:
             raise Http404()
 
-
-# def get_invitation_context(party):
-#     return {
-#         'title': "Lion's Head",
-#         'main_image': 'bride-groom.png',
-#         'main_color': '#fff3e8',
-#         'font_color': '#666666',
-#         'page_title': settings.BRIDE_AND_GROOM + ": You're invited!",
-#         'preheader_text': "You are invited!",
-#         'invitation_id': party.invitation_id,
-#         'party': party,
-#         'meals': MEALS,
-#         'site_pwd': get_site_pwd()
-#     }
-
-def get_RSVP_template_from_party(party):
+def get_RSVP_template_from_party(party,preview_only=False):
+    #This should return an RSVPEmail object associated with a party.
     try:
         return get_object_or_404(RSVPEmail,pk=party.rsvp_template.pk)
     except:
-        raise Exception("you fucked up")
+        if party is not None:
+            raise Exception("No invite with pk; make sure party has an RSVP template.")
 
 def get_invitation_context(party):
     template = get_RSVP_template_from_party(party)
