@@ -10,8 +10,8 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404
 from guests.models import Party
-from babtyno.models import HomePage
 from babtynoemail.models import SaveTheDateEmail as STD
+from guests.emailhelpers import get_site_password
 
 SAVE_THE_DATE_TEMPLATE = 'mail/guest_email.html'
 
@@ -102,15 +102,6 @@ def get_template_id_from_party(party):
     except:
         return STD.objects.first().id
 
-def get_site_password():
-    #Return the site passsword or none (handle none in template)
-    #Relies on there being a page with the slug 'home'
-    try:
-        hp_pwd = HomePage.objects.get(slug='home')
-        return hp_pwd.get_view_restrictions().values_list('password',flat=True)[0]
-    except HomePage.DoesNotExist:
-        return ''
-
 def get_save_the_date_context(template_id):
     template = get_object_or_404(STD,pk=template_id)
     context = {
@@ -147,7 +138,7 @@ def send_save_the_date_email(context, recipients, test_only=False):
     for filename in (context['header_filename'], context['main_image']):
         attachment_path = filename.file.path
         try:
-            with open(tpath, "rb") as image_file:
+            with open(attachment_path, "rb") as image_file:
                 msg_img = MIMEImage(image_file.read())
                 msg_img.add_header('Content-ID', '<{}>'.format(filename))
                 msg.attach(msg_img)

@@ -9,7 +9,7 @@
 <mj-style>
   h3 {
     font-family: Palatino,serif;
-    color:{{email.font_colour}};
+    color:{{email.font_color}};
     padding-top:30px;
     font-size:35px;
     font-weight:bolder;
@@ -27,7 +27,7 @@
     <mj-column>
         <mj-text align="center">
         {% if invite_id %}
-        {% url 'rsvp-confirm' invite_id=invite_id as the_url %}
+        {% url 'guests:invitation' invite_id=invite_id as the_url %}
         <a href="{{the_url}}">RSVP here</a>
         {% endif %}
         </mj-text>

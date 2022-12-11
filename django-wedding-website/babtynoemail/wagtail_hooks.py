@@ -6,8 +6,9 @@ from django.urls import path, reverse
 
 from .models import SaveTheDateEmail,RSVPEmail
 
-class SaveTheDateButtons(ButtonHelper):
+class EmailButtons(ButtonHelper):
     view_button_classnames = ["button-small","icon","icon-site"]
+    send_button_classnames = ["button-small","icon","icon-site"]
 
     def view_button(self,obj):
         text = "View"
@@ -30,7 +31,7 @@ class SaveTheDateEmail(ModelAdmin):
     menu_label = 'Save The Dates'
     menu_icon = 'mail'
     menu_order = 300
-    button_helper_class = SaveTheDateButtons
+    button_helper_class = EmailButtons
 
 @modeladmin_register
 class RSVPDateEmail(ModelAdmin):
@@ -38,7 +39,7 @@ class RSVPDateEmail(ModelAdmin):
     menu_label = 'RSVP Emails'
     menu_icon = 'mail'
     menu_order = 400
-    #button_helper_class = SaveTheDateButtons
+    button_helper_class = EmailButtons
 
 @hooks.register('register_admin_url')
 def register_invitation():

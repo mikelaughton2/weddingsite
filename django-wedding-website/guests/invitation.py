@@ -7,9 +7,11 @@ from django.urls import reverse
 from django.http import Http404
 from django.template.loader import render_to_string
 from guests.models import Party, MEALS
+from babtynoemail.models import RSVPEmail
 from django.utils.translation import gettext as _
-from guests.save_the_date import get_site_password as get_site_pwd
 from bigday import settings
+from guests.emailhelpers import get_site_password
+from django.shortcuts import get_object_or_404
 
 INVITATION_TEMPLATE = 'mail/guest_email.html'
 
@@ -25,20 +27,48 @@ def guess_party_by_invite_id_or_404(invite_id):
             raise Http404()
 
 
-def get_invitation_context(party):
-    return {
-        'title': "Lion's Head",
-        'main_image': 'bride-groom.png',
-        'main_color': '#fff3e8',
-        'font_color': '#666666',
-        'page_title': settings.BRIDE_AND_GROOM + ": You're invited!",
-        'preheader_text': "You are invited!",
-        'invitation_id': party.invitation_id,
-        'party': party,
-        'meals': MEALS,
-        'site_pwd': get_site_pwd()
-    }
+# def get_invitation_context(party):
+#     return {
+#         'title': "Lion's Head",
+#         'main_image': 'bride-groom.png',
+#         'main_color': '#fff3e8',
+#         'font_color': '#666666',
+#         'page_title': settings.BRIDE_AND_GROOM + ": You're invited!",
+#         'preheader_text': "You are invited!",
+#         'invitation_id': party.invitation_id,
+#         'party': party,
+#         'meals': MEALS,
+#         'site_pwd': get_site_pwd()
+#     }
 
+def get_RSVP_template_from_party(party):
+    try:
+        return get_object_or_404(RSVPEmail,pk=party.rsvp_template.pk)
+    except:
+        raise Exception("you fucked up")
+
+def get_invitation_context(party):
+    template = get_RSVP_template_from_party(party)
+    context = {
+        'email':template,
+        'invitation_id':party.invitation_id
+    }
+    context['title']=template.title
+    context['header_filename']=template.header_image
+    context['main_image']=template.hero_image
+    #note en-gb v. en-ca from original
+    context['main_color']=template.main_colour
+    context['font_color']=template.font_colour
+    context['rsvp_address'] = settings.DEFAULT_WEDDING_REPLY_EMAIL
+    context['site_url'] = settings.WEDDING_WEBSITE_URL
+    context['couple'] = settings.BRIDE_AND_GROOM
+    context['location'] = settings.WEDDING_LOCATION
+    context['date'] = settings.WEDDING_DATE
+    context['page_title'] = (settings.BRIDE_AND_GROOM + _(' - Save the Date!'))
+    context['site_pwd'] = get_site_password()
+    context['meals'] = MEALS
+    context['party'] = party
+    return context
 
 def send_invitation_email(party, test_only=False, recipients=None):
     if recipients is None:
@@ -54,7 +84,7 @@ def send_invitation_email(party, test_only=False, recipients=None):
     template_html = render_to_string(INVITATION_TEMPLATE, context=context)
     template_text = _("You're invited to {}'s wedding. To view this invitation, visit {} in any browser.".format(
         settings.BRIDE_AND_GROOM,
-        reverse('invitation', args=[context['invitation_id']])
+        reverse('guests:invitation', args=[context['invitation_id']])
     ))
     subject = _("You're invited")
     # https://www.vlent.nl/weblog/2014/01/15/sending-emails-with-embedded-images-in-django/
@@ -63,14 +93,17 @@ def send_invitation_email(party, test_only=False, recipients=None):
                                  reply_to=[settings.DEFAULT_WEDDING_REPLY_EMAIL])
     msg.attach_alternative(template_html, "text/html")
     msg.mixed_subtype = 'related'
-    for filename in (context['main_image'], ):
-        attachment_path = os.path.join(os.path.dirname(__file__), 'static', 'invitation', 'images', filename)
-        if not os.path.exists(attachment_path):
-            raise Exception("Attachment does not exist")
-        with open(attachment_path, "rb") as image_file:
-            msg_img = MIMEImage(image_file.read())
-            msg_img.add_header('Content-ID', '<{}>'.format(filename))
-            msg.attach(msg_img)
+    for filename in (context['header_filename'], context['main_image']):
+        attachment_path = filename.file.path
+        try:
+            with open(attachment_path, "rb") as image_file:
+                msg_img = MIMEImage(image_file.read())
+                msg_img.add_header('Content-ID', '<{}>'.format(filename))
+                msg.attach(msg_img)
+                print("attached file fine")
+        except:
+            raise Exception("This attachment does not exist!")
+            print("error attaching file")
     print ('sending invitation to {} ({})'.format(party.name, ', '.join(recipients)))
     if not test_only:
         msg.send()

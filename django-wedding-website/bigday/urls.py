@@ -10,10 +10,10 @@ from wagtail.documents import urls as wagtaildocs_urls
 
 urlpatterns = [
     #re_path(r'^', include('wedding.urls')),
-    re_path(r'^guests/', include('guests.urls')),
+    re_path(r'^guests/', include('guests.urls',namespace='guests')),
     re_path(r'^admin/', admin.site.urls),
     re_path(r'^accounts/', include('django.contrib.auth.urls')),
-    re_path(r'^email_prev/',include('babtynoemail.urls')),
+    re_path(r'^email_prev/',include('babtynoemail.urls',namespace='babtynoemail')),
     #wagtail
     re_path(r'cms/', include(wagtailadmin_urls)),
     re_path(r'documents/', include(wagtaildocs_urls)),

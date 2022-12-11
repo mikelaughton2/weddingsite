@@ -7,15 +7,16 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.db.models import Count, Q
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
 from guests import csv_import
 from guests.invitation import get_invitation_context, INVITATION_TEMPLATE, guess_party_by_invite_id_or_404, \
-    send_invitation_email
+    send_invitation_email, get_RSVP_template_from_party
 from guests.models import Guest, MEALS, Party
 from guests.save_the_date import get_save_the_date_context, send_save_the_date_email, SAVE_THE_DATE_TEMPLATE, \
     SAVE_THE_DATE_CONTEXT_MAP, send_all_save_the_dates
 from .forms import ConfirmForm
+from django.utils.translation import gettext as _
 from babtynoemail.models import RSVPEmail
 
 class GuestListView(ListView):
@@ -83,7 +84,7 @@ def invitation(request, invite_id):
             party.comments = comments if not party.comments else '{}; {}'.format(party.comments, comments)
         party.is_attending = party.any_guests_attending
         party.save()
-        return HttpResponseRedirect(reverse('rsvp-confirm', args=[invite_id]))
+        return HttpResponseRedirect(reverse('guests:rsvp-confirm', args=[invite_id]))
     return render(request, template_name='guests/invitation.html', context={
         'couple_name': settings.BRIDE_AND_GROOM,
         'location': settings.WEDDING_LOCATION,
@@ -116,10 +117,12 @@ def _parse_invite_params(params):
 
 def rsvp_confirm(request, invite_id=None):
     party = guess_party_by_invite_id_or_404(invite_id)
+    template = get_RSVP_template_from_party(party)
     return render(request, template_name='guests/rsvp_confirmation.html', context={
         'party': party,
         'support_email': settings.DEFAULT_WEDDING_REPLY_EMAIL,
         'couple': settings.BRIDE_AND_GROOM,
+        'template':template,
     })
 
 
@@ -162,6 +165,30 @@ def save_the_dates_send(request):
         form = ConfirmForm()
         return render(request,"guests/proforma.html",
             context={'form':form,'title':'Send save the dates?'})
+
+@login_required
+def rsvp_send(request,party_pk):
+    party_instance = get_object_or_404(Party,pk=int(party_pk))
+    if request.method == "POST":
+        form = ConfirmForm(request.POST)
+        if form.is_valid():
+            test_only = form.cleaned_data['test_only']
+            mark_sent = form.cleaned_data['mark_sent']
+            send_invitation_email(party_instance,test_only = test_only)
+            context = {}
+            context['title']=_("Successful test") if test_only else _("Sent!")
+            context['message']="<p>"
+            context['message']+=_("Sent!") if not test_only else _("Successful test")
+            context['message']+="</p>"
+            context['message']+="<p>"
+            context['message']+=_("Marked sent") if mark_sent else _("Not marked sent")
+            context['message']+="</p>"
+        return render(request,"guests/admin_message.html",
+            context=context)
+    else:
+        form = ConfirmForm()
+        return render(request,"guests/proforma.html",
+            context={'form':form,'title':_('Send RSVP to {}?'.format(party_instance.guest_emails)),'party':party_instance})
 
 #This will break
 def save_the_date_random(request):
