@@ -147,7 +147,7 @@ def send_save_the_date_email(context, recipients, test_only=False):
     for filename in (context['header_filename'], context['main_image']):
         attachment_path = filename.file.path
         try:
-            with open(tpath, "rb") as image_file:
+            with open(attachment_path, "rb") as image_file:
                 msg_img = MIMEImage(image_file.read())
                 msg_img.add_header('Content-ID', '<{}>'.format(filename.filename))
                 msg.attach(msg_img)
