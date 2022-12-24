@@ -4,6 +4,7 @@
 {% include "wagtailadmin/shared/header.html" with title=title icon="envelope" %}
 <div class="nice-padding">
 <form method="post">
+{{to_send_to}}
 {{form.as_p}}
 {% csrf_token %}
 <input type="Submit" value="Submit">

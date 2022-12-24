@@ -145,6 +145,7 @@ def invitation_email_test(request, invite_id):
 
 @login_required
 def save_the_dates_send(request):
+    to_send_to = Party.in_default_order().filter(is_invited=True, save_the_date_sent=None)
     if request.method == "POST":
         form = ConfirmForm(request.POST)
         if form.is_valid():
@@ -161,10 +162,10 @@ def save_the_dates_send(request):
             context['message']+="</p>"
         return render(request,"guests/admin_message.html",
             context=context)
-    else:
+    else: 
         form = ConfirmForm()
         return render(request,"guests/proforma.html",
-            context={'form':form,'title':'Send save the dates?'})
+            context={'form':form,'title':'Send save the dates?','to_send_to':to_send_to})
 
 @login_required
 def rsvp_send(request,party_pk):
