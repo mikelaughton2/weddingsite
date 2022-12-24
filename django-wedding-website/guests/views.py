@@ -159,9 +159,10 @@ def save_the_dates_send(request):
         return render(request,"guests/admin_message.html",
             context=context)
     else:
+        to_send_to = Party.in_default_order().filter(is_invited=True, save_the_date_sent=None)
         form = ConfirmForm()
         return render(request,"guests/proforma.html",
-            context={'form':form,'title':'Send save the dates?'})
+            context={'form':form,'title':'Send save the dates?','to_send_to':to_send_to})
 
 #This will break
 def save_the_date_random(request):
