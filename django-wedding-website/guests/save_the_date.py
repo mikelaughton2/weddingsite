@@ -149,11 +149,11 @@ def send_save_the_date_email(context, recipients, test_only=False):
         try:
             with open(tpath, "rb") as image_file:
                 msg_img = MIMEImage(image_file.read())
-                msg_img.add_header('Content-ID', '<{}>'.format(filename))
+                msg_img.add_header('Content-ID', '<{}>'.format(filename.filename))
                 msg.attach(msg_img)
                 print("attached file fine")
         except:
-            raise Exception("This attachment does not exist!")
+            raise Exception("The attachment at {} does not exist!".format(attachment_path))
             print("error attaching file")
 
     if not test_only:
