@@ -31,7 +31,7 @@
         <a href="{{the_url}}">RSVP here</a>
         {% endif %}
         </mj-text>
-        <mj-image src="{% if email_mode %}cid:{{ hero_image }}{% else %}{{ hero_image.full_url }}{% endif %}"></mj-image>
+        <mj-image src="{{ hero_image.full_url }}"></mj-image>
         {% for b in email.body %}
         <mj-text>{{b}}</mj-text>
         {% endfor %}
