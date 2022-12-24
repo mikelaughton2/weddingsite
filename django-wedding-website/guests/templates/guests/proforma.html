@@ -5,7 +5,7 @@
 <div class="nice-padding">
 <form method="post">
 <p>{% for r in to_send_to %}
-{{r]}{% if not forloop.last %},{% endif %}
+{{r}}{% if not forloop.last %},{% endif %}
 {% endfor %}</p>
 {{form.as_p}}
 {% csrf_token %}
