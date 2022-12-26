@@ -6,7 +6,9 @@
 <form method="post">
   <p>{% for r in to_send_to %}
   {{r.guest_emails}}{% if not forloop.last %},{% endif %}
-{{to_send_to}}
+  {% endfor %}
+  </p>
+
 {{form.as_p}}
 {% csrf_token %}
 <input type="Submit" value="Submit">
