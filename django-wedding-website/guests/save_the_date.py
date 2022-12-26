@@ -12,6 +12,7 @@ from django.shortcuts import get_object_or_404
 from guests.models import Party
 from babtynoemail.models import SaveTheDateEmail as STD
 from guests.emailhelpers import get_site_password
+from babtyno.models import NewlyWedSetting, EmailSettings
 
 SAVE_THE_DATE_TEMPLATE = 'mail/guest_email.html'
 
@@ -68,10 +69,10 @@ def get_save_the_date_context(template_id):
     context['font_color']=template.font_colour
     context['rsvp_address'] = settings.DEFAULT_WEDDING_REPLY_EMAIL
     context['site_url'] = settings.WEDDING_WEBSITE_URL
-    context['couple'] = settings.BRIDE_AND_GROOM
+    context['couple'] = NewlyWedSetting().newlyweds
     context['location'] = settings.WEDDING_LOCATION
     context['date'] = settings.WEDDING_DATE
-    context['page_title'] = (settings.BRIDE_AND_GROOM + _(' - Save the Date!'))
+    context['page_title'] = (NewlyWedSetting().newlyweds + _(' - Save the Date!'))
     context['site_pwd'] = get_site_password()
     return context
 
@@ -80,9 +81,9 @@ def send_save_the_date_email(context, recipients, test_only=False):
     context['email_mode'] = True
     context['rsvp_address'] = settings.DEFAULT_WEDDING_REPLY_EMAIL
     context['site_url'] = settings.WEDDING_WEBSITE_URL
-    context['couple'] = settings.BRIDE_AND_GROOM
+    context['couple'] = NewlyWedSetting().newlyweds
     template_html = render_to_string(SAVE_THE_DATE_TEMPLATE, context=context)
-    template_text = ("Save the date for " + settings.BRIDE_AND_GROOM + "'s wedding! " + settings.WEDDING_DATE + ". " + settings.WEDDING_LOCATION)
+    template_text = ("Save the date for " + NewlyWedSetting().newlyweds + "'s wedding! " + settings.WEDDING_DATE + ". " + settings.WEDDING_LOCATION)
     subject = context['email'].subject
     # https://www.vlent.nl/weblog/2014/01/15/sending-emails-with-embedded-images-in-django/
     msg = EmailMultiAlternatives(subject, template_text, settings.DEFAULT_WEDDING_FROM_EMAIL, bcc=recipients, reply_to=[settings.DEFAULT_WEDDING_REPLY_EMAIL])

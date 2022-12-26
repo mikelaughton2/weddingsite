@@ -12,6 +12,7 @@ from django.utils.translation import gettext as _
 from bigday import settings
 from guests.emailhelpers import get_site_password
 from django.shortcuts import get_object_or_404
+from babtyno.models import NewlyWedSetting,EmailSettings
 
 INVITATION_TEMPLATE = 'mail/guest_email.html'
 
@@ -49,12 +50,12 @@ def get_invitation_context(party):
     #note en-gb v. en-ca from original
     context['main_color']=template.main_colour
     context['font_color']=template.font_colour
-    context['rsvp_address'] = settings.DEFAULT_WEDDING_REPLY_EMAIL
+    context['rsvp_address'] = EmailSettings().default_wedding_reply_email
     context['site_url'] = settings.WEDDING_WEBSITE_URL
-    context['couple'] = settings.BRIDE_AND_GROOM
+    context['couple'] = NewlyWedSetting().newlyweds
     context['location'] = settings.WEDDING_LOCATION
     context['date'] = settings.WEDDING_DATE
-    context['page_title'] = (settings.BRIDE_AND_GROOM + _(' - Save the Date!'))
+    context['page_title'] = (NewlyWedSetting().newlyweds + _(' - Save the Date!'))
     context['site_pwd'] = get_site_password()
     context['meals'] = MEALS
     context['party'] = party
@@ -70,17 +71,17 @@ def send_invitation_email(party, test_only=False, recipients=None):
     context = get_invitation_context(party)
     context['email_mode'] = True
     context['site_url'] = settings.WEDDING_WEBSITE_URL
-    context['couple'] = settings.BRIDE_AND_GROOM
+    context['couple'] = NewlyWedSetting().newlyweds
     template_html = render_to_string(INVITATION_TEMPLATE, context=context)
     template_text = _("You're invited to {}'s wedding. To view this invitation, visit {} in any browser.".format(
-        settings.BRIDE_AND_GROOM,
+        NewlyWedSetting().newlyweds,
         reverse('guests:invitation', args=[context['invitation_id']])
     ))
     subject = _("You're invited")
     # https://www.vlent.nl/weblog/2014/01/15/sending-emails-with-embedded-images-in-django/
-    msg = EmailMultiAlternatives(subject, template_text, settings.DEFAULT_WEDDING_FROM_EMAIL, bcc=recipients,
+    msg = EmailMultiAlternatives(subject, template_text, EmailSettings().default_wedding_from_email, bcc=recipients,
                                  cc=settings.WEDDING_CC_LIST,
-                                 reply_to=[settings.DEFAULT_WEDDING_REPLY_EMAIL])
+                                 reply_to=[EmailSettings().default_wedding_reply_email])
     msg.attach_alternative(template_html, "text/html")
     msg.mixed_subtype = 'related'
     for filename in (context['header_filename'], context['main_image']):

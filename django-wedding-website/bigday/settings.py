@@ -58,7 +58,7 @@ INSTALLED_APPS = [
     'modelcluster',
     'taggit',
     'mjml',
-    
+
 ]
 
 MIDDLEWARE = [
@@ -88,6 +88,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'wagtailmenus.context_processors.wagtailmenus',
+                'wagtail.contrib.settings.context_processors.settings',
             ],
         },
     },
@@ -159,6 +160,10 @@ STATICFILES_DIRS = (
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR,'common_files','locale'),
+]
 
 #wagtail
 WAGTAIL_SITE_NAME="Simone & Mike July 2023"

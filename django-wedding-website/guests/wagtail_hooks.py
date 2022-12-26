@@ -7,6 +7,8 @@ from wagtail.admin.menu import MenuItem
 from django.urls import path, reverse
 from django.utils.translation import gettext as _
 
+from django.db import models
+
 class PartyExtraButtons(ButtonHelper):
 
     send_button_classnames = ["button-small","icon","icon-site"]

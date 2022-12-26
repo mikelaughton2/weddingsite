@@ -9,7 +9,30 @@ from wagtail import blocks
 from modelcluster.fields import ParentalKey
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.images.blocks import ImageChooserBlock
+from wagtail.contrib.settings.models import BaseGenericSetting, BaseSiteSetting, register_setting
+from django.utils.translation import gettext as _
+from wagtail.contrib.settings.models import (
+    BaseGenericSetting,
+    BaseSiteSetting,
+    register_setting,
+)
 
+@register_setting
+class NewlyWedSetting(BaseSiteSetting):
+    newlyweds = models.CharField(max_length=150,default='Happy & Couple')
+    wedding_date = models.DateField(null=True)
+
+    class Meta:
+        verbose_name = _("Newlywed Setting")
+
+@register_setting
+class EmailSettings(BaseSiteSetting):
+    default_wedding_email = models.EmailField(max_length=254,default='example@example.com')
+    default_wedding_from_email = models.EmailField(max_length=254,default='example@example.com')
+    default_wedding_reply_email = models.EmailField(max_length=254,default='example@example.com')
+    
+    class Meta:
+        verbose_name = _("Email settings")
 
 class HomePage(Page):
     hero_text = models.CharField(blank=True,max_length=200)
