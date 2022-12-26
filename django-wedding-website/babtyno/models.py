@@ -21,7 +21,7 @@ from wagtail.contrib.settings.models import (
 class NewlyWedSetting(BaseSiteSetting):
     newlyweds = models.CharField(max_length=150,default='Happy & Couple')
     wedding_date = models.DateField(null=True)
-
+    location = models.CharField(max_length=150,default="TBD!")
     class Meta:
         verbose_name = _("Newlywed Setting")
 
@@ -30,7 +30,7 @@ class EmailSettings(BaseSiteSetting):
     default_wedding_email = models.EmailField(max_length=254,default='example@example.com')
     default_wedding_from_email = models.EmailField(max_length=254,default='example@example.com')
     default_wedding_reply_email = models.EmailField(max_length=254,default='example@example.com')
-    
+
     class Meta:
         verbose_name = _("Email settings")
 

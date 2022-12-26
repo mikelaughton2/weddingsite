@@ -53,8 +53,9 @@ def get_invitation_context(party):
     context['rsvp_address'] = EmailSettings().default_wedding_reply_email
     context['site_url'] = settings.WEDDING_WEBSITE_URL
     context['couple'] = NewlyWedSetting().newlyweds
-    context['location'] = settings.WEDDING_LOCATION
-    context['date'] = settings.WEDDING_DATE
+    #Do we actually need this??
+    context['location'] = NewlyWedSetting().location
+    context['date'] = NewlyWedSetting().wedding_date
     context['page_title'] = (NewlyWedSetting().newlyweds + _(' - Save the Date!'))
     context['site_pwd'] = get_site_password()
     context['meals'] = MEALS

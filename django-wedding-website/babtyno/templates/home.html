@@ -2,6 +2,10 @@
 {% load static %}
 {% load wagtailcore_tags %}
 {% load wagtailimages_tags %}
+{% load wagtailsettings_tags %}
+{% get_settings as wagtail_settings %}
+{% load i18n wagtailcore_tags %}
+{% load menu_tags %}
 {% block page_head %}
     <!-- Custom CSS -->
     <link href="{% static 'bigday/css/creative.css' %}" rel="stylesheet">
@@ -25,12 +29,12 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand page-scroll" href="#page-top">{% wagtail_site as current_site %}{{current_site}}</a>
+                <a class="navbar-brand page-scroll" href="#page-top">{{ wagtail_settings.babtyno.NewlyWedSetting.newlyweds }}</a>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
-                    <li>
+                    <!-- <li>
                         <a class="page-scroll" href="#main-header">Home</a>
                     </li>
                     <li>
@@ -44,14 +48,22 @@
                     </li>
                     <li>
                         <a class="page-scroll" href="#contact">Contact</a>
-                    </li>
+                    </li> -->
                     <!-- New HTMLs -->
-                    {% load menu_tags %}
+                    {% main_menu %}
                     {% for item in menu_items %}
                     <li>
-                      <a href="{{ item.href }}">{{ item.text }}</a>
+                      <a class="page-scroll" href="{{ item.href }}">{{ item.text }}</a>
                     </li>
                     {% endfor %}
+                    {% if page %}
+                        {% for translation in page.get_translations.live %}
+                          {% get_language_info for translation.locale.language_code as lang %}
+                          <li><a href="{% pageurl translation %}" rel="alternate" hreflang="{{ language_code }}">
+                              {% if forloop.first%}<span class="glyphicon glyphicon-globe" aria-hidden="true"></span>{% endif %}{{ lang.name_local }}
+                          </a></li>
+                          {% endfor %}
+                      {% endif %}
 
                 </ul>
             </div>
@@ -110,7 +122,7 @@
       <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 text-center">
-        {{ page.about_venue|richtext }}
+              {{ page.about_venue|richtext }}
             </div>
         </div>
       </div>

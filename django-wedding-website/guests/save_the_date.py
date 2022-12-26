@@ -70,8 +70,8 @@ def get_save_the_date_context(template_id):
     context['rsvp_address'] = settings.DEFAULT_WEDDING_REPLY_EMAIL
     context['site_url'] = settings.WEDDING_WEBSITE_URL
     context['couple'] = NewlyWedSetting().newlyweds
-    context['location'] = settings.WEDDING_LOCATION
-    context['date'] = settings.WEDDING_DATE
+    context['location'] = NewlyWedSetting().location
+    context['date'] = NewlyWedSetting().wedding_date
     context['page_title'] = (NewlyWedSetting().newlyweds + _(' - Save the Date!'))
     context['site_pwd'] = get_site_password()
     return context
@@ -83,7 +83,7 @@ def send_save_the_date_email(context, recipients, test_only=False):
     context['site_url'] = settings.WEDDING_WEBSITE_URL
     context['couple'] = NewlyWedSetting().newlyweds
     template_html = render_to_string(SAVE_THE_DATE_TEMPLATE, context=context)
-    template_text = ("Save the date for " + NewlyWedSetting().newlyweds + "'s wedding! " + settings.WEDDING_DATE + ". " + settings.WEDDING_LOCATION)
+    template_text = ("Save the date for " + NewlyWedSetting().newlyweds + "'s wedding! " + NewlyWedSetting().wedding_date + ". " + NewlyWedSetting().location)
     subject = context['email'].subject
     # https://www.vlent.nl/weblog/2014/01/15/sending-emails-with-embedded-images-in-django/
     msg = EmailMultiAlternatives(subject, template_text, settings.DEFAULT_WEDDING_FROM_EMAIL, bcc=recipients, reply_to=[settings.DEFAULT_WEDDING_REPLY_EMAIL])
