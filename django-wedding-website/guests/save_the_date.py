@@ -10,68 +10,11 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404
 from guests.models import Party
-from babtyno.models import HomePage
 from babtynoemail.models import SaveTheDateEmail as STD
+from guests.emailhelpers import get_site_password
+from babtyno.models import NewlyWedSetting, EmailSettings
 
 SAVE_THE_DATE_TEMPLATE = 'mail/guest_email.html'
-
-
-# SAVE_THE_DATE_CONTEXT_MAP = {
-#
-#     'title': 'whatever-the-database-says',
-#     'hero-image': 'whatever-the-database-says',
-#     'main colour': 'whatever the database says',
-#     'text colour': 'whatever the database says',
-# }
-
-# Get template from Party needs to be reformed to select choose from a guest email in the database
-
-#Delete this
-SAVE_THE_DATE_CONTEXT_MAP = {
-        'lions-head': {
-            'title': "Lion's Head",
-            'header_filename': 'hearts.png',
-            'main_image': 'lions-head.jpg',
-            'main_color': '#fff3e8',
-            'font_color': '#666666',
-        },
-        'ski-trip': {
-            'title': 'Ski Trip',
-            'header_filename': 'hearts.png',
-            'main_image': 'ski-trip.jpg',
-            'main_color': '#330033',
-            'font_color': '#ffffff',
-        },
-        'canada': {
-            'title': 'Canada!',
-            'header_filename': 'maple-leaf.png',
-            'main_image': 'canada-cartoon-resized.jpg',
-            'main_color': '#ea2e2e',
-            'font_color': '#e5ddd9',
-        },
-        'american-gothic': {
-            'title': 'American Gothic',
-            'header_filename': 'hearts.png',
-            'main_image': 'american-gothic.jpg',
-            'main_color': '#b6ccb5',
-            'font_color': '#000000',
-        },
-        'plunge': {
-            'title': 'The Plunge',
-            'header_filename': 'plunger.png',
-            'main_image': 'plunge.jpg',
-            'main_color': '#b4e6ff',
-            'font_color': '#000000',
-        },
-        'dimagi': {
-            'title': 'Dimagi',
-            'header_filename': 'commcare.png',
-            'main_image': 'join-us.jpg',
-            'main_color': '#003d71',
-            'font_color': '#d6d6d4',
-        }
-    }
-
 
 def send_all_save_the_dates(test_only=False, mark_as_sent=False):
     to_send_to = Party.in_default_order().filter(is_invited=True, save_the_date_sent=None)
@@ -96,20 +39,11 @@ def send_save_the_date_to_party(party, test_only=False):
         )
 
 def get_template_id_from_party(party):
-    #Dummy function for now - return the pk of the first obj
+    #Either return template ID for party, or give them the default one.
     try:
         return get_object_or_404(SaveTheDateEmail,pk=party.pk)
     except:
         return STD.objects.first().id
-
-def get_site_password():
-    #Return the site passsword or none (handle none in template)
-    #Relies on there being a page with the slug 'home'
-    try:
-        hp_pwd = HomePage.objects.get(slug='home')
-        return hp_pwd.get_view_restrictions().values_list('password',flat=True)[0]
-    except HomePage.DoesNotExist:
-        return ''
 
 def get_save_the_date_context(template_id):
     template = get_object_or_404(STD,pk=template_id)
@@ -124,10 +58,10 @@ def get_save_the_date_context(template_id):
     context['font_color']=template.font_colour
     context['rsvp_address'] = settings.DEFAULT_WEDDING_REPLY_EMAIL
     context['site_url'] = settings.WEDDING_WEBSITE_URL
-    context['couple'] = settings.BRIDE_AND_GROOM
-    context['location'] = settings.WEDDING_LOCATION
-    context['date'] = settings.WEDDING_DATE
-    context['page_title'] = (settings.BRIDE_AND_GROOM + _(' - Save the Date!'))
+    context['couple'] = NewlyWedSetting().newlyweds
+    context['location'] = NewlyWedSetting().location
+    context['date'] = NewlyWedSetting().wedding_date
+    context['page_title'] = (NewlyWedSetting().newlyweds + _(' - Save the Date!'))
     context['site_pwd'] = get_site_password()
     return context
 
@@ -136,9 +70,9 @@ def send_save_the_date_email(context, recipients, test_only=False):
     context['email_mode'] = True
     context['rsvp_address'] = settings.DEFAULT_WEDDING_REPLY_EMAIL
     context['site_url'] = settings.WEDDING_WEBSITE_URL
-    context['couple'] = settings.BRIDE_AND_GROOM
+    context['couple'] = NewlyWedSetting().newlyweds
     template_html = render_to_string(SAVE_THE_DATE_TEMPLATE, context=context)
-    template_text = ("Save the date for " + settings.BRIDE_AND_GROOM + "'s wedding! " + settings.WEDDING_DATE + ". " + settings.WEDDING_LOCATION)
+    template_text = ("Save the date for " + NewlyWedSetting().newlyweds + "'s wedding! " + NewlyWedSetting().wedding_date + ". " + NewlyWedSetting().location)
     subject = context['email'].subject
     # https://www.vlent.nl/weblog/2014/01/15/sending-emails-with-embedded-images-in-django/
     msg = EmailMultiAlternatives(subject, template_text, settings.DEFAULT_WEDDING_FROM_EMAIL, bcc=recipients, reply_to=[settings.DEFAULT_WEDDING_REPLY_EMAIL])

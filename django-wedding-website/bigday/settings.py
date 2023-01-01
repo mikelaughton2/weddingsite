@@ -58,7 +58,7 @@ INSTALLED_APPS = [
     'modelcluster',
     'taggit',
     'mjml',
-    
+
 ]
 
 MIDDLEWARE = [
@@ -88,6 +88,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'wagtailmenus.context_processors.wagtailmenus',
+                'wagtail.contrib.settings.context_processors.settings',
             ],
         },
     },
@@ -133,7 +134,7 @@ LANGUAGE_CODE = 'en-gb'
 
 TIME_ZONE = 'UTC'
 
-USE_I18N = True
+USE_I18N = WAGTAIL_I18N_ENABLED = True
 
 USE_L10N = True
 
@@ -160,26 +161,30 @@ STATICFILES_DIRS = (
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR,'common_files','locale'),
+]
+
 #wagtail
 WAGTAIL_SITE_NAME="Simone & Mike July 2023"
 
 PASSWORD_REQUIRED_TEMPLATE = "registration/password_required.html"
 
 # This is used in a few places where the names of the couple are used
-BRIDE_AND_GROOM = 'Mike and Simona'
-# base address for all emails
-DEFAULT_WEDDING_EMAIL = 'happilyeverafter@example.com'
-# the address your emails (save the dates/invites/etc.) will come from
-DEFAULT_WEDDING_FROM_EMAIL = BRIDE_AND_GROOM + ' <' + DEFAULT_WEDDING_EMAIL + '>' # change to 'address@domain.tld'
-# the default reply-to of your emails
-DEFAULT_WEDDING_REPLY_EMAIL = DEFAULT_WEDDING_EMAIL # change to 'address@domain.tld'
-# the location of your wedding
-WEDDING_LOCATION = 'Lithuania'
-# the date of your wedding
-WEDDING_DATE = 'July 1'
+# BRIDE_AND_GROOM = 'Mike and Simona'
+# # base address for all emails
+# DEFAULT_WEDDING_EMAIL = 'happilyeverafter@example.com'
+# # the address your emails (save the dates/invites/etc.) will come from
+# DEFAULT_WEDDING_FROM_EMAIL = BRIDE_AND_GROOM + ' <' + DEFAULT_WEDDING_EMAIL + '>' # change to 'address@domain.tld'
+# # the default reply-to of your emails
+# DEFAULT_WEDDING_REPLY_EMAIL = DEFAULT_WEDDING_EMAIL # change to 'address@domain.tld'
+# # the location of your wedding
+# WEDDING_LOCATION = 'Lithuania'
+# # the date of your wedding
+# WEDDING_DATE = 'July 1'
 
 # when sending test emails it will use this address
-DEFAULT_WEDDING_TEST_EMAIL = DEFAULT_WEDDING_FROM_EMAIL
+# DEFAULT_WEDDING_TEST_EMAIL = DEFAULT_WEDDING_FROM_EMAIL
 
 
 # This is used in links in save the date / invitations

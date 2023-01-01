@@ -1,26 +1,27 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load wagtailcore_tags %}
+{% load wagtailimages_tags %}
 {% block page_head %}
     <link href="{% static 'bigday/css/rsvp-confirmation.css' %}" rel="stylesheet" xmlns="http://www.w3.org/1999/html">
+    {% image template.hero_image original as hero_image %}
+
+    <style type="text/css">
+      body{
+        background: linear-gradient(
+          rgba(255, 255, 255, 0.6),
+          rgba(255, 255, 255, 0.6)
+        ), url({{hero_image.url}}) no-repeat center center fixed;
+      }
+      </style>
 {% endblock %}
 {% block page_content %}
     <div class="layer"></div>
     <div class="container" id="main">
-        <h2>Hi/Sveiki {{ party.name }}! Thanks for your response! Dėkojame už atsakymą!</h2>
         {% if party.any_guests_attending %}
-            <p>
-                We can't wait to celebrate with you!
-            </p>
-            <p>
-                If you have any other questions, don't hesitate to email us at <a href="mailto:{{ support_email }}">{{ support_email }}</a>.
-            </p>
+            {{ template.rsvp_positive_response_text|safe }}
         {% else %}
-            <p>
-                We're sorry you won't be able to join us in Niagara.
-            </p>
-            <p>
-                We look forward to catching up with you some other time!
-            </p>
+            {{template.rsvp_negative_response_text|safe }}
         {% endif %}
         <p>
             - {{couple}}

@@ -27,6 +27,11 @@ class Party(models.Model):
         on_delete=models.PROTECT,
         blank=True,
         null=True)
+    rsvp_template = models.ForeignKey("babtynoemail.RSVPEmail",
+        on_delete = models.PROTECT,
+        blank=True,
+        null=True,
+    )
     category = models.CharField(max_length=20, null=True, blank=True)
     save_the_date_sent = models.DateTimeField(null=True, blank=True, default=None)
     save_the_date_opened = models.DateTimeField(null=True, blank=True, default=None)

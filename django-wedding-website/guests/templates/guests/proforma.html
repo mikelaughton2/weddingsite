@@ -4,9 +4,11 @@
 {% include "wagtailadmin/shared/header.html" with title=title icon="envelope" %}
 <div class="nice-padding">
 <form method="post">
-<p>{% for r in to_send_to %}
-{{r.guest_emails}}{% if not forloop.last %},{% endif %}
-{% endfor %}</p>
+  <p>{% for r in to_send_to %}
+  {{r.guest_emails}}{% if not forloop.last %},{% endif %}
+  {% endfor %}
+  </p>
+
 {{form.as_p}}
 {% csrf_token %}
 <input type="Submit" value="Submit">

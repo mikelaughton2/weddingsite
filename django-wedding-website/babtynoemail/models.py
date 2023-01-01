@@ -46,7 +46,7 @@ class SaveTheDateEmail(models.Model):
     ]
 
     def get_absolute_url(self):
-        return reverse('save-the-date',args=[str(self.id)])
+        return reverse('babtynoemail:std-prev',args=[str(self.id)])
 
     def __str__(self):
         return "{}".format(self.title)
@@ -71,10 +71,12 @@ class RSVPEmail(models.Model):
         use_json_field=True
     )
     hero_image = models.ForeignKey('wagtailimages.Image',null=True,blank=True,on_delete=models.SET_NULL,related_name="+")
+    rsvp_positive_response_text = RichTextField(blank=True)
+    rsvp_negative_response_text = RichTextField(blank=True)
     panels = [
         FieldPanel('title',help_text="Name of email (internal only)"),
         FieldPanel('subject',help_text="Subject line - recipient sees this"),
-        FieldPanel('header_image',help_text="Cute lil photo"),
+        FieldPanel('header_image',help_text="Cute lil photo at the top of the email"),
         FieldRowPanel(
             [
                 FieldPanel('main_colour',help_text="Main/background colour",widget=colour_widget),
@@ -82,11 +84,13 @@ class RSVPEmail(models.Model):
             ]
                 ),
         FieldPanel('body',help_text="Text of email"),
-        FieldPanel('hero_image',help_text="Pretty image"),
+        FieldPanel('hero_image',help_text="Pretty image in the email"),
+        FieldPanel('rsvp_positive_response_text',help_text="Response to give the guests saying 'yes'"),
+        FieldPanel('rsvp_negative_response_text',help_text="Response to give the guests saying 'no'. Make it nice!")
     ]
 
     def get_absolute_url(self):
-        return reverse('invitation-email',args=[str(self.id)])
+        return reverse('guests:invitation-email',args=[str(self.id)])
 
     def __str__(self):
         return "{}".format(self.title)

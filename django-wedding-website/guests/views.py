@@ -7,16 +7,18 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.db.models import Count, Q
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
 from guests import csv_import
 from guests.invitation import get_invitation_context, INVITATION_TEMPLATE, guess_party_by_invite_id_or_404, \
-    send_invitation_email
+    send_invitation_email, get_RSVP_template_from_party
 from guests.models import Guest, MEALS, Party
 from guests.save_the_date import get_save_the_date_context, send_save_the_date_email, SAVE_THE_DATE_TEMPLATE, \
-    SAVE_THE_DATE_CONTEXT_MAP, send_all_save_the_dates
+    send_all_save_the_dates
 from .forms import ConfirmForm
+from django.utils.translation import gettext as _
 from babtynoemail.models import RSVPEmail
+from babtyno.models import NewlyWedSetting, EmailSettings
 
 class GuestListView(ListView):
     model = Guest
@@ -48,8 +50,8 @@ def dashboard(request):
     meal_breakdown = attending_guests.exclude(meal=None).values('meal').annotate(count=Count('*'))
     category_breakdown = attending_guests.values('party__category').annotate(count=Count('*'))
     return render(request, 'guests/dashboard.html', context={
-        'couple_name': settings.BRIDE_AND_GROOM,
-        'location': settings.WEDDING_LOCATION,
+        'couple_name': NewlyWedSetting().newlyweds,
+        'location': NewlyWedSetting().location,
         'guests': Guest.objects.filter(is_attending=True).count(),
         'possible_guests': Guest.objects.filter(party__is_invited=True).exclude(is_attending=False).count(),
         'not_coming_guests': Guest.objects.filter(is_attending=False).count(),
@@ -83,10 +85,10 @@ def invitation(request, invite_id):
             party.comments = comments if not party.comments else '{}; {}'.format(party.comments, comments)
         party.is_attending = party.any_guests_attending
         party.save()
-        return HttpResponseRedirect(reverse('rsvp-confirm', args=[invite_id]))
+        return HttpResponseRedirect(reverse('guests:rsvp-confirm', args=[invite_id]))
     return render(request, template_name='guests/invitation.html', context={
-        'couple_name': settings.BRIDE_AND_GROOM,
-        'location': settings.WEDDING_LOCATION,
+        'couple_name': NewlyWedSetting().newlyweds,
+        'location': NewlyWedSetting().location,
         'party': party,
         'meals': MEALS,
         'main_image': 'bride-groom.png',
@@ -116,10 +118,12 @@ def _parse_invite_params(params):
 
 def rsvp_confirm(request, invite_id=None):
     party = guess_party_by_invite_id_or_404(invite_id)
+    template = get_RSVP_template_from_party(party)
     return render(request, template_name='guests/rsvp_confirmation.html', context={
         'party': party,
         'support_email': settings.DEFAULT_WEDDING_REPLY_EMAIL,
-        'couple': settings.BRIDE_AND_GROOM,
+        'couple': NewlyWedSetting().newlyweds,
+        'template':template,
     })
 
 
@@ -127,7 +131,7 @@ def rsvp_confirm(request, invite_id=None):
 def invitation_email_preview(request, invite_id):
     party = guess_party_by_invite_id_or_404(invite_id)
     #For now
-    email = RSVPEmail.objects.first()
+    email = get_RSVP_template_from_party(party)
     context = get_invitation_context(party)
     context['email']=email
     context['invite_id'] = invite_id
@@ -142,6 +146,7 @@ def invitation_email_test(request, invite_id):
 
 @login_required
 def save_the_dates_send(request):
+    to_send_to = Party.in_default_order().filter(is_invited=True, save_the_date_sent=None)
     if request.method == "POST":
         form = ConfirmForm(request.POST)
         if form.is_valid():
@@ -149,26 +154,43 @@ def save_the_dates_send(request):
             mark_sent = form.cleaned_data['mark_sent']
             send_all_save_the_dates(test_only = test_only,mark_as_sent=mark_sent)
             context = {}
-            context['title']="Successful test" if test_only else "Sent!"
+            context['title']=("Successful test") if test_only else _("Sent!")
             context['message']="<p>"
-            context['message']+="Sent!" if not test_only else "Successful test"
+            context['message']+=_("Sent!") if not test_only else _("Successful test")
             context['message']+="</p>"
             context['message']+="<p>"
-            context['message']+="Marked sent" if mark_sent else "Not marked sent"
+            context['message']+=_("Marked sent") if mark_sent else _("Not marked sent")
             context['message']+="</p>"
         return render(request,"guests/admin_message.html",
             context=context)
     else:
-        to_send_to = Party.in_default_order().filter(is_invited=True, save_the_date_sent=None)
         form = ConfirmForm()
         return render(request,"guests/proforma.html",
-            context={'form':form,'title':'Send save the dates?','to_send_to':to_send_to})
+            context={'form':form,'title':_('Send save the dates?'),'to_send_to':to_send_to})
 
-#This will break
-def save_the_date_random(request):
-    template_id = random.choice(SAVE_THE_DATE_CONTEXT_MAP.keys())
-    return save_the_date_preview(request, template_id)
-
+@login_required
+def rsvp_send(request,party_pk):
+    party_instance = get_object_or_404(Party,pk=int(party_pk))
+    if request.method == "POST":
+        form = ConfirmForm(request.POST)
+        if form.is_valid():
+            test_only = form.cleaned_data['test_only']
+            mark_sent = form.cleaned_data['mark_sent']
+            send_invitation_email(party_instance,test_only = test_only)
+            context = {}
+            context['title']=_("Successful test") if test_only else _("Sent!")
+            context['message']="<p>"
+            context['message']+=_("Sent!") if not test_only else _("Successful test")
+            context['message']+="</p>"
+            context['message']+="<p>"
+            context['message']+=_("Marked sent") if mark_sent else _("Not marked sent")
+            context['message']+="</p>"
+        return render(request,"guests/admin_message.html",
+            context=context)
+    else:
+        form = ConfirmForm()
+        return render(request,"guests/proforma.html",
+            context={'form':form,'title':_('Send RSVP to {}?'.format(party_instance.guest_emails)),'to_send_to':party_instance.guest_emails,'party':party_instance})
 
 def save_the_date_preview(request, template_id):
     context = get_save_the_date_context(template_id)
