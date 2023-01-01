@@ -28,7 +28,7 @@
         <mj-text align="center">
         {% if invitation_id %}
         {% url 'guests:invitation' invite_id=invitation_id as the_url %}
-        <a href="{{the_url}}">RSVP here</a>
+        <a href="{{request.build_absolute_uri() }}{{the_url}}">RSVP here</a>
         {% endif %}
         </mj-text>
         <mj-image src="{{ hero_image.full_url }}"></mj-image>
