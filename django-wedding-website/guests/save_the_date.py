@@ -16,17 +16,6 @@ from babtyno.models import NewlyWedSetting, EmailSettings
 
 SAVE_THE_DATE_TEMPLATE = 'mail/guest_email.html'
 
-
-# SAVE_THE_DATE_CONTEXT_MAP = {
-#
-#     'title': 'whatever-the-database-says',
-#     'hero-image': 'whatever-the-database-says',
-#     'main colour': 'whatever the database says',
-#     'text colour': 'whatever the database says',
-# }
-
-# Get template from Party needs to be reformed to select choose from a guest email in the database
-
 def send_all_save_the_dates(test_only=False, mark_as_sent=False):
     to_send_to = Party.in_default_order().filter(is_invited=True, save_the_date_sent=None)
     for party in to_send_to:
