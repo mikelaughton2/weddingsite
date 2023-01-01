@@ -72,17 +72,17 @@ def send_invitation_email(party, test_only=False, recipients=None):
     context = get_invitation_context(party)
     context['email_mode'] = True
     context['site_url'] = settings.WEDDING_WEBSITE_URL
-    context['couple'] = NewlyWedSetting().newlyweds
+    context['couple'] = NewlyWedSetting.for_site(1).newlyweds
     template_html = render_to_string(INVITATION_TEMPLATE, context=context)
     template_text = _("You're invited to {}'s wedding. To view this invitation, visit {} in any browser.".format(
-        NewlyWedSetting().newlyweds,
+        NewlyWedSetting.for_site(1).newlyweds,
         reverse('guests:invitation', args=[context['invitation_id']])
     ))
     subject = _("You're invited")
     # https://www.vlent.nl/weblog/2014/01/15/sending-emails-with-embedded-images-in-django/
-    msg = EmailMultiAlternatives(subject, template_text, EmailSettings().default_wedding_from_email, bcc=recipients,
+    msg = EmailMultiAlternatives(subject, template_text, EmailSettings.for_site(1).default_wedding_from_email, bcc=recipients,
                                  cc=settings.WEDDING_CC_LIST,
-                                 reply_to=[EmailSettings().default_wedding_reply_email])
+                                 reply_to=[EmailSettings.for_site(1).default_wedding_reply_email])
     msg.attach_alternative(template_html, "text/html")
     msg.mixed_subtype = 'related'
     for filename in (context['header_filename'], context['main_image']):
