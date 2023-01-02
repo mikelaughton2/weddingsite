@@ -78,7 +78,7 @@ def send_invitation_email(party, test_only=False, recipients=None):
         NewlyWedSetting.for_site(1).newlyweds,
         reverse('guests:invitation', args=[context['invitation_id']])
     ))
-    subject = context['email']['subject']
+    subject = context['email'].subject
     # https://www.vlent.nl/weblog/2014/01/15/sending-emails-with-embedded-images-in-django/
     msg = EmailMultiAlternatives(subject, template_text, EmailSettings.for_site(1).default_wedding_from_email, bcc=recipients,
                                  cc=settings.WEDDING_CC_LIST,
