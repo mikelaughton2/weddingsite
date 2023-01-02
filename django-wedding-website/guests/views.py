@@ -122,7 +122,7 @@ def rsvp_confirm(request, invite_id=None):
     return render(request, template_name='guests/rsvp_confirmation.html', context={
         'party': party,
         'support_email': settings.DEFAULT_WEDDING_REPLY_EMAIL,
-        'couple': NewlyWedSetting().newlyweds,
+        'couple': NewlyWedSetting.for_site(1).newlyweds,
         'template':template,
     })
 
@@ -164,6 +164,7 @@ def save_the_dates_send(request):
         return render(request,"guests/admin_message.html",
             context=context)
     else:
+        to_send_to = Party.in_default_order().filter(is_invited=True, save_the_date_sent=None)
         form = ConfirmForm()
         return render(request,"guests/proforma.html",
             context={'form':form,'title':_('Send save the dates?'),'to_send_to':to_send_to})

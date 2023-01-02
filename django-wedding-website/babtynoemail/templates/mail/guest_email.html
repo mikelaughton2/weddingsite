@@ -3,12 +3,10 @@
 {% load wagtailimages_tags %}
 {% block email_head %}
 <mj-font name="Palatino" href="https://fonts.googleapis.com/css?family=Palatino"></mj-font>
-<mj-attributes>
-
-  </mj-attributes>
+<mj-attributes>  </mj-attributes>
 <mj-style>
   h3 {
-    font-family: Palatino,serif;
+    font-family: Palatino, serif;
     color:{{email.font_color}};
     padding-top:30px;
     font-size:35px;
@@ -25,7 +23,7 @@
 {% image email.hero_image original as hero_image %}
 <mj-section background-color="{{email.main_colour}}">
     <mj-column>
-        <mj-text align="center">
+        <mj-text align="center" font-family="Palatino,serif">
         {% if invitation_id %}
         {% url 'guests:invitation' invite_id=invitation_id as the_url %}
         <a href="{{ site_url }}{{the_url}}">RSVP here</a>

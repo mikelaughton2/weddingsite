@@ -3,7 +3,7 @@
 {% load wagtailcore_tags %}
 {% load wagtailimages_tags %}
 {% load wagtailsettings_tags %}
-{% get_settings as wagtail_settings %}
+{% get_settings %}
 {% load i18n wagtailcore_tags %}
 {% load menu_tags %}
 {% block page_head %}
@@ -29,26 +29,11 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand page-scroll" href="#page-top">{{ wagtail_settings.babtyno.NewlyWedSetting.newlyweds }}</a>
+                <a class="navbar-brand page-scroll" href="#page-top">{{ settings.babtyno.NewlyWedSetting.newlyweds }}</a>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
-                    <!-- <li>
-                        <a class="page-scroll" href="#main-header">Home</a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="#event">Event</a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="#niagara">The Venue</a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="#other-stuff">Everything Else</a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="#contact">Contact</a>
-                    </li> -->
                     <!-- New HTMLs -->
                     {% main_menu %}
                     {% for item in menu_items %}
