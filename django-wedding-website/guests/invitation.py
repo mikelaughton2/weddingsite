@@ -52,11 +52,11 @@ def get_invitation_context(party):
     context['font_color']=template.font_colour
     context['rsvp_address'] = EmailSettings().default_wedding_reply_email
     context['site_url'] = settings.WEDDING_WEBSITE_URL
-    context['couple'] = NewlyWedSetting().newlyweds
+    context['couple'] = NewlyWedSetting.for_site(1).newlyweds
     #Do we actually need this??
-    context['location'] = NewlyWedSetting().location
-    context['date'] = NewlyWedSetting().wedding_date
-    context['page_title'] = (NewlyWedSetting().newlyweds + _(' - Save the Date!'))
+    context['location'] = NewlyWedSetting.for_site(1).location
+    context['date'] = NewlyWedSetting.for_site(1).wedding_date
+    context['page_title'] = (NewlyWedSetting.for_site(1).newlyweds + _(' - Save the Date!'))
     context['site_pwd'] = get_site_password()
     context['meals'] = MEALS
     context['party'] = party
@@ -78,7 +78,7 @@ def send_invitation_email(party, test_only=False, recipients=None):
         NewlyWedSetting.for_site(1).newlyweds,
         reverse('guests:invitation', args=[context['invitation_id']])
     ))
-    subject = _("You're invited")
+    subject = context['email']['subject']
     # https://www.vlent.nl/weblog/2014/01/15/sending-emails-with-embedded-images-in-django/
     msg = EmailMultiAlternatives(subject, template_text, EmailSettings.for_site(1).default_wedding_from_email, bcc=recipients,
                                  cc=settings.WEDDING_CC_LIST,
