@@ -12,7 +12,7 @@
                 {{location}}<br>
                 {{date}}
             </p>
-            {% with "invitation/images/"|add:main_image as main_static_url %}
+            {% with "guests/invitation/images/"|add:main_image as main_static_url %}
             <img src="{% static main_static_url %}"
                  alt="{{ couple }}"
                  style="display: block; padding: 0; color: #666666;"

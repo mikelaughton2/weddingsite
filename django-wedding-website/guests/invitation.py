@@ -50,7 +50,7 @@ def get_invitation_context(party):
     #note en-gb v. en-ca from original
     context['main_color']=template.main_colour
     context['font_color']=template.font_colour
-    context['rsvp_address'] = EmailSettings().default_wedding_reply_email
+    context['rsvp_address'] = EmailSettings.for_site(1).default_wedding_reply_email
     context['site_url'] = settings.WEDDING_WEBSITE_URL
     context['couple'] = NewlyWedSetting.for_site(1).newlyweds
     #Do we actually need this??

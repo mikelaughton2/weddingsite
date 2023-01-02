@@ -87,8 +87,8 @@ def invitation(request, invite_id):
         party.save()
         return HttpResponseRedirect(reverse('guests:rsvp-confirm', args=[invite_id]))
     return render(request, template_name='guests/invitation.html', context={
-        'couple_name': NewlyWedSetting().newlyweds,
-        'location': NewlyWedSetting().location,
+        'couple_name': NewlyWedSetting.for_site(1).newlyweds,
+        'location': NewlyWedSetting.for_site(1).location,
         'party': party,
         'meals': MEALS,
         'main_image': 'bride-groom.png',
