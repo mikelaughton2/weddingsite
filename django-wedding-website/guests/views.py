@@ -78,7 +78,7 @@ def invitation(request, invite_id):
             guest = Guest.objects.get(pk=response.guest_pk)
             assert guest.party == party
             guest.is_attending = response.is_attending
-            guest.meal = response.meal
+            #guest.meal = response.meal
             guest.save()
         if request.POST.get('comments'):
             comments = request.POST.get('comments')
@@ -121,7 +121,7 @@ def rsvp_confirm(request, invite_id=None):
     template = get_RSVP_template_from_party(party)
     return render(request, template_name='guests/rsvp_confirmation.html', context={
         'party': party,
-        'support_email': settings.DEFAULT_WEDDING_REPLY_EMAIL,
+        'support_email': EmailSettings.for_site(1).default_wedding_email,
         'couple': NewlyWedSetting.for_site(1).newlyweds,
         'template':template,
     })

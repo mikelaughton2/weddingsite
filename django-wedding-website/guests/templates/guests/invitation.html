@@ -39,7 +39,7 @@
                 {% endwith %}
             </div>
             {% if not guest.is_child %}
-            <div class="form-group">
+            <!-- <div class="form-group">
                 {% with 'meal-'|add:guest.unique_id as meal_label %}
                 <label for="{{ meal_label }}" class="col-sm-3 control-label">... and will eat</label>
                 {% for meal_id, meal_name in meals %}
@@ -48,11 +48,11 @@
                 </label>
                 {% endfor %}
                 {% endwith %}
-            </div>
+            </div> -->
             {% endif %}
             {% endfor %}
             <div class="form-group col-sm-12">
-                <input type="text" name="comments" class="form-control" placeholder="Questions/comments/well wishes; klausimai/komentarai/linkėjimai/informacija apie maisto alergiją/netoleravimą" >
+                <textarea name="comments" class="form-control" placeholder="Questions/comments/well wishes; klausimai/komentarai/linkėjimai/informacija apie maisto alergiją/netoleravimą"></textarea>
             </div>
             <div class="form-group">
                 <div class="text-center">
