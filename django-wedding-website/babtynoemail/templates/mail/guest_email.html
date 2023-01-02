@@ -23,14 +23,20 @@
 {% image email.hero_image original as hero_image %}
 <mj-section background-color="{{email.main_colour}}">
     <mj-column>
+      {% if invitation_id %}
+      {% url 'guests:invitation' invite_id=invitation_id as the_url %}
+      <mj-button align="center" font-size="18px" background-color="#20c5a0" border-radius="8px" color="#fff" font-family="open Sans Helvetica, Arial, sans-serif" href="{{ site_url }}{{the_url}}">
+        RSVP here | Paspauskite čia
+      </mj-button>
+      {% endif %}
         <mj-image src="{{ hero_image.full_url }}"></mj-image>
         {% for b in email.body %}
-        <mj-text>{{b}}</mj-text>
+        <mj-text align="center">{{b}}</mj-text>
         {% endfor %}
         {% if invitation_id %}
         {% url 'guests:invitation' invite_id=invitation_id as the_url %}
         <mj-button align="center" font-size="18px" background-color="#20c5a0" border-radius="8px" color="#fff" font-family="open Sans Helvetica, Arial, sans-serif" href="{{ site_url }}{{the_url}}">
-          RSVP here
+          RSVP here | Paspauskite čia
         </mj-button>
         {% endif %}
     </mj-column>
