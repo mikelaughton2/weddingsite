@@ -29,7 +29,7 @@
         {% endfor %}
         {% if invitation_id %}
         {% url 'guests:invitation' invite_id=invitation_id as the_url %}
-        <mj-button align="center" font-size="18px" background-color="#20c5a0" border-radius="8px" color="#fff" font-family="open Sans Helvetica, Arial, sans-serif" href="{{the_url}}">
+        <mj-button align="center" font-size="18px" background-color="#20c5a0" border-radius="8px" color="#fff" font-family="open Sans Helvetica, Arial, sans-serif" href="{{ site_url }}{{the_url}}">
           RSVP here
         </mj-button>
         {% endif %}
