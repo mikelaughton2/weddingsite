@@ -44,7 +44,7 @@
                     {% if page %}
                         {% for translation in page.get_translations.live %}
                           {% get_language_info for translation.locale.language_code as lang %}
-                          <li><a href="{% pageurl translation %}" rel="alternate" hreflang="{{ language_code }}">
+                          <li><a class="btn btn-default" href="{% pageurl translation %}" rel="alternate" hreflang="{{ language_code }}">
                               {% if forloop.first%}<span class="glyphicon glyphicon-globe" aria-hidden="true"></span>{% endif %}{{ lang.name_local }}
                           </a></li>
                           {% endfor %}
