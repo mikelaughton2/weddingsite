@@ -17,6 +17,13 @@ urlpatterns = [
     #wagtail
     re_path(r'cms/', include(wagtailadmin_urls)),
     re_path(r'documents/', include(wagtaildocs_urls)),
-    re_path(r'^', include(wagtail_urls)),
+    # re_path(r'^', include(wagtail_urls)),
     #end wagtail
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+urlpatterns += i18n_patterns(
+        re_path(r'^', include(wagtail_urls)),
+)
+
+if settings.DEBUG:
+    urlpatterns+=static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)
