@@ -7,10 +7,11 @@ Based on [django-wedding-website](https://github.com/czue/django-wedding-website
 This includes everything we did for our own wedding:
 
 - A responsive, single-page traditional wedding website
-- New: Wagtail CMS to make the single-page website more customisable within the template
+- New: CMS to make the single-page website more customisable within the template
 - A complete guest management application
 - Email framework for sending save the dates
-- New: Models for emails to be able to send customisable save the dates
+- New: Customisable save-the-dates and RSVP emails
+- New: Some multilingual support for the outward facing website
 - Email framework for invitations and built in RSVP system
 - Planned: Models for invitations to send customisable save the dates
 - New: MJML emails for better responsiveness
