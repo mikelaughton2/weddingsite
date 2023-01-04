@@ -98,7 +98,10 @@ def send_invitation_email(party, test_only=False, recipients=None):
             raise Exception("This attachment does not exist!")
             print("error attaching file")
     print ('sending invitation to {} ({})'.format(party.name, ', '.join(recipients)))
+        
     if not test_only:
+        party.invitation_sent = datetime.now()
+        party.save()
         msg.send()
 
 
