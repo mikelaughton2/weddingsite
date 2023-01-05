@@ -92,6 +92,7 @@ def register_send_individual_RSVP():
         path('send-rsvp-individual',rsvp_send,name='send-rsvp-individual')
     ]
 
-@hooks.register('regsiter_admin_menu_item')
+@hooks.register('register_admin_menu_item')
 def register_rsvp_send_menu_item():
     return MenuItem('Send RSVPs',reverse('guests:send-rsvps'),icon_name='envelope'),
+
