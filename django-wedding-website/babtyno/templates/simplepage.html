@@ -2,6 +2,10 @@
 {% load static %}
 {% load wagtailcore_tags %}
 {% load wagtailimages_tags %}
+{% load wagtailsettings_tags %}
+{% load i18n %}
+{% load menu_tags %}
+{% get_settings %}
 {% load menu_tags %}
 {% block page_head %}
     <!-- Custom CSS -->
@@ -62,7 +66,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 text-center">
-                  {{ page.title|richtext }}
+                  <h1>{{ page.title }}</h1>
                 </div>
             </div>
                <div class="row">

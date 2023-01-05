@@ -2,7 +2,7 @@ from django.urls import re_path, path
 
 from guests.views import GuestListView, test_email, save_the_date_preview, export_guests, \
     invitation, invitation_email_preview, invitation_email_test, rsvp_confirm, dashboard, save_the_dates_send, \
-    rsvp_send
+    rsvp_send, new_dashboard
 app_name="guests"
 urlpatterns = [
     re_path(r'^guests/$', GuestListView.as_view(), name='guest-list'),
@@ -16,4 +16,5 @@ urlpatterns = [
     re_path(r'^rsvp/confirm/(?P<invite_id>[\w-]+)/$', rsvp_confirm, name='rsvp-confirm'),
     re_path(r'^send-save-the-dates/', save_the_dates_send, name='send-save-the-dates'),
     path('send-rsvp-individual/<int:party_pk>/',rsvp_send,name='send-rsvp-individual'),
+    # path('new_dashboard/',new_dashboard,name='new_dashboard'),
 ]
