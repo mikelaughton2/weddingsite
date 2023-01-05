@@ -62,6 +62,11 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 text-center">
+                  {{ page.title|richtext }}
+                </div>
+            </div>
+               <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 text-left">
                   {{ page.body|richtext }}
                 </div>
             </div>
