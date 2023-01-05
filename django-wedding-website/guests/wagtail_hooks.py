@@ -96,3 +96,8 @@ def register_send_individual_RSVP():
 def register_rsvp_send_menu_item():
     return MenuItem('Send RSVPs',reverse('guests:send-rsvps'),icon_name='envelope'),
 
+@hooks.register('register_admin_url')
+def register_new_dashboard():
+    return [
+        path('new_dashboard',new_dashboard,name='new_dashboard')
+    ]
