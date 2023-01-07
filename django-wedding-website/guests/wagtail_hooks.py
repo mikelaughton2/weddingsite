@@ -6,13 +6,13 @@ from wagtail import hooks
 from wagtail.admin.menu import MenuItem
 from django.urls import path, reverse
 from django.utils.translation import gettext as _
-
+from wagtail.admin.edit_handlers import InlinePanel
 from django.db import models
 
 class PartyExtraButtons(ButtonHelper):
 
     send_button_classnames = ["button-small","icon","icon-site"]
-
+    #This needs fixing
     def send_STD_button(self,obj):
         text = _("Send Save The Date")
         return {
@@ -47,9 +47,22 @@ class PartyAdmin(ModelAdmin):
     menu_order = 200
     add_to_settings_menu = False
     exclude_from_explorer = False
-    list_display = ("name","guest_emails","any_guests_attending")
+    list_display = ("name","guest_emails","any_guests_attending","save_the_date_sent","invitation_sent",)
     search_fields = ("name",)
+    inspect_view_enabled = True
+    # inspect_view_fields = ("guest_set",)
     button_helper_class = PartyExtraButtons
+    custom_panels = [
+        InlinePanel("guests",label="guests"),
+    ]
+
+    def my_custom_panels(self,custom_panels):
+        self.edit_handler = self.get_edit_handler()+ObjectList(custom_panels)
+
+    def __init__(self,custom_panels):
+        super().__init__(self)
+        self.my_custom_panels(custom_panels)
+
 
 class GuestAdmin(ModelAdmin):
     model = Guest
