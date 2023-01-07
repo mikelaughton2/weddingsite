@@ -1,7 +1,7 @@
 from wagtail.contrib.modeladmin.options import ModelAdmin, ModelAdminGroup, modeladmin_register
 from wagtail.contrib.modeladmin.helpers import ButtonHelper
 from .models import Party, Guest
-from guests.views import save_the_dates_send, rsvp_send, new_dashboard
+from guests.views import save_the_dates_send,rsvp_send
 from wagtail import hooks
 from wagtail.admin.menu import MenuItem
 from django.urls import path, reverse
@@ -47,7 +47,7 @@ class PartyAdmin(ModelAdmin):
     menu_order = 200
     add_to_settings_menu = False
     exclude_from_explorer = False
-    list_display = ("name","guest_emails","any_guests_attending")
+    list_display = ("name","guest_emails","any_guests_attending","save_the_date_sent")
     search_fields = ("name",)
     button_helper_class = PartyExtraButtons
 
@@ -83,25 +83,15 @@ def register_send_stds_menu_item():
 @hooks.register('register_admin_url')
 def register_invitation():
         return [
-            path('send_rsvps/',rsvps_send,name='send_rsvps'),
+            path('send_rsvps',rsvps_send,name='send_rsvps'),
         ]
 
 @hooks.register('register_admin_url')
 def register_send_individual_RSVP():
     return [
-        path('send-rsvp-individual/',rsvp_send,name='send-rsvp-individual'),
+        path('send-rsvp-individual',rsvp_send,name='send-rsvp-individual')
     ]
 
-# @hooks.register('register_admin_menu_item')
-# def register_rsvp_send_menu_item():
-#     return MenuItem('Send RSVPs',reverse('guests:send-rsvps'),icon_name='envelope'),
-
-@hooks.register('register_admin_urls')
-def register_new_dashboard():
-    return [
-        path('new_dashboard/',new_dashboard,name='new_dashboard'),
-    ]
-
-@hooks.register('register_admin_menu_item')
-def register_new_dashboard_item():
-    return MenuItem('Dashboard',reverse('new_dashboard'),icon_name='order')
+@hooks.register('regsiter_admin_menu_item')
+def register_rsvp_send_menu_item():
+    return MenuItem('Send RSVPs',reverse('guests:send-rsvps'),icon_name='envelope'),
