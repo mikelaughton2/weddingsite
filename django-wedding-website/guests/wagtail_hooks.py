@@ -47,7 +47,7 @@ class PartyAdmin(ModelAdmin):
     menu_order = 200
     add_to_settings_menu = False
     exclude_from_explorer = False
-    list_display = ("name","guest_emails","any_guests_attending","save_the_date_sent")
+    list_display = ("name","guest_emails","any_guests_attending","save_the_date_sent","invitation_sent")
     search_fields = ("name",)
     button_helper_class = PartyExtraButtons
 
