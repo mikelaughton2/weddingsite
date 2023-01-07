@@ -11,7 +11,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
 from guests import csv_import
 from guests.invitation import get_invitation_context, INVITATION_TEMPLATE, guess_party_by_invite_id_or_404, \
-    send_invitation_email, get_RSVP_template_from_party
+    send_invitation_email, get_RSVP_template_from_party, send_all_invitations
 from guests.models import Guest, MEALS, Party
 from guests.save_the_date import get_save_the_date_context, send_save_the_date_email, SAVE_THE_DATE_TEMPLATE, \
     send_all_save_the_dates
