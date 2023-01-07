@@ -37,14 +37,14 @@
                     <!-- New HTMLs -->
                     {% main_menu %}
                     {% for item in menu_items %}
-                    <li class="active">
+                    <li  style="color: #f05f40 !important;">
                       <a class="page-scroll navbar-brand" href="{{ item.href }}">{{ item.text }}</a>
                     </li>
                     {% endfor %}
                     {% if page %}
                         {% for translation in page.get_translations.live %}
                           {% get_language_info for translation.locale.language_code as lang %}
-                          <li style="color: #f05f40 !important;"><a class="btn btn-default" href="{% pageurl translation %}" rel="alternate" hreflang="{{ language_code }}">
+                          <li><a class="btn btn-default" href="{% pageurl translation %}" rel="alternate" hreflang="{{ language_code }}">
                               {% if forloop.first%}<span class="glyphicon glyphicon-globe" aria-hidden="true"></span>{% endif %}{{ lang.name_local }}
                           </a></li>
                           {% endfor %}
