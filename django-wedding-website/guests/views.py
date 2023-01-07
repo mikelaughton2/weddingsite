@@ -203,6 +203,30 @@ def save_the_dates_send(request):
             context={'form':form,'title':_('Send save the dates?'),'to_send_to':to_send_to})
 
 @login_required
+def rsvp_all_send(request):
+    to_send_to = Party.objects.filter(is_invited=True,invitation_sent=None)
+    if request.method == "POST":
+        form = ConfirmForm(request.POST)
+        if form.is_valid():
+            test_only = form.cleaned_data['test_only']
+            mark_sent = form.cleaned_data['mark_sent']
+            send_all_invitations(test_only = test_only,mark_as_sent=mark_sent)
+            context = {}
+            context['title']=_("Successful test") if test_only else _("Sent!")
+            context['message']="<p>"
+            context['message']+=_("Sent!") if not test_only else _("Successful test")
+            context['message']+="</p>"
+            context['message']+="<p>"
+            context['message']+=_("Marked sent") if mark_sent else _("Not marked sent")
+            context['message']+="</p>"
+        return render(request,"guests/admin_message.html",
+            context=context)
+    else:
+        form = ConfirmForm()
+        return render(request,"guests/proforma.html",
+            context={'form':form,'title':_('Send invitations?'),'to_send_to':to_send_to})
+
+@login_required
 def rsvp_send(request,party_pk):
     party_instance = get_object_or_404(Party,pk=int(party_pk))
     if request.method == "POST":

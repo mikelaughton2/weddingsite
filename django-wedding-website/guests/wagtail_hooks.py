@@ -78,13 +78,18 @@ def register_send_stds():
 
 @hooks.register('register_admin_menu_item')
 def register_send_stds_menu_item():
-    return MenuItem('Send STDs',reverse('guests:send-save-the-dates'),icon_name='date')
+    return MenuItem('Send Save The Dates',reverse('guests:send-save-the-dates'),icon_name='date')
 
 @hooks.register('register_admin_url')
 def register_invitation():
         return [
-            path('send_rsvps',rsvps_send,name='send_rsvps'),
+            path('send_rsvps',rsvp_send,name='send_rsvps'),
         ]
+
+@hooks.register('register_admin_menu_item')
+def register_send_stds_menu_item():
+    return MenuItem('Send Save RSVPs',reverse('guests:send-rsvps'),icon_name='date')
+
 
 @hooks.register('register_admin_url')
 def register_send_individual_RSVP():
