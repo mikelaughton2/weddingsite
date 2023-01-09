@@ -97,12 +97,12 @@ def register_send_individual_RSVP():
         path('send-rsvp-individual',rsvp_send,name='send-rsvp-individual')
     ]
 
-@hooks.register('register_admin_url')
+@hooks.register('register_admin_urls')
 def register_new_dashboard():
     return [
-        path('new-dashboard',new_dashboard,name='new-dashboard')
+        path('new_dashboard/',new_dashboard,name='new_dashboard'),
     ]
 
 @hooks.register('register_admin_menu_item')
-def register_new_dashboard():
-    return MenuItem('Dashboard',reverse('guests:new_dashboard'),icon_name='icon-sort'),
+def register_new_dashboard_item():
+    return MenuItem('Dashboard',reverse('new_dashboard'),icon_name='order')
