@@ -16,9 +16,23 @@
           background-image:url("{{hero_image.full_url}}");
         }
 
+        body img {
+            max-width: 100%;
+            height: auto;
+        }
+        .navbar a {
+          color: #f05f40 !important;
+        }
       </style>
 {% endblock %}
 {% block page_content %}
+{% get_current_language as LANGUAGE_CODE %}
+{% if LANGUAGE_CODE == "en-gb" %}
+{% main_menu template="partials/navigation.html" %}
+{% else %}
+{% flat_menu LANGUAGE_CODE template="partials/navigation.html" fall_back_to_default_site_menus=True %}
+{% endif %}
+{% comment %}
     <nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
@@ -41,21 +55,21 @@
                       <a class="page-scroll navbar-brand" href="{{ item.href }}">{{ item.text }}</a>
                     </li>
                     {% endfor %}
-                    {% if page %}
-                        {% for translation in page.get_translations.live %}
-                          {% get_language_info for translation.locale.language_code as lang %}
-                          <li><a class="btn btn-default" href="{% pageurl translation %}" rel="alternate" hreflang="{{ language_code }}">
-                              {% if forloop.first%}<span class="glyphicon glyphicon-globe" aria-hidden="true"></span>{% endif %}{{ lang.name_local }}
-                          </a></li>
-                          {% endfor %}
-                      {% endif %}
-
                 </ul>
+                {% if page %}
+                    {% for translation in page.get_translations.live %}
+                      {% get_language_info for translation.locale.language_code as lang %}
+                      <a class="btn btn-default" href="{% pageurl translation %}" rel="alternate" hreflang="{{ language_code }}">
+                          {% if forloop.first%}<span class="glyphicon glyphicon-globe" aria-hidden="true"></span>{% endif %}{{ lang.name_local }}
+                      </a>
+                      {% endfor %}
+                  {% endif %}
             </div>
             <!-- /.navbar-collapse -->
         </div>
         <!-- /.container-fluid -->
     </nav>
+{% endcomment %}
     {% block main %}
     <header id="main-header">
         <div class="header-content">

@@ -20,47 +20,12 @@
       </style>
 {% endblock %}
 {% block page_content %}
-    <nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
-        <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand page-scroll" href="#page-top">{% wagtail_site as current_site %}{{current_site}}</a>
-            </div>
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right">
-                    <!-- New HTMLs -->
-                    {% main_menu %}
-                    {% for item in menu_items %}
-                    <li>
-                      <a href="{{ item.href }}">{{ item.text }}</a>
-                    </li>
-                    {% endfor %}
-                    {% for item in menu_items %}
-                    <li>
-                      <a class="page-scroll" href="{{ item.href }}">{{ item.text }}</a>
-                    </li>
-                    {% endfor %}
-                    {% if page %}
-                        {% for translation in page.get_translations.live %}
-                          {% get_language_info for translation.locale.language_code as lang %}
-                          <li><a class="btn btn-default" href="{% pageurl translation %}" rel="alternate" hreflang="{{ language_code }}">
-                              {% if forloop.first%}<span class="glyphicon glyphicon-globe" aria-hidden="true"></span>{% endif %}{{ lang.name_local }}
-                          </a></li>
-                          {% endfor %}
-                      {% endif %}
-                </ul>
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container-fluid -->
-    </nav>
+{% get_current_language as LANGUAGE_CODE %}
+{% if LANGUAGE_CODE == "en-gb" %}
+{% main_menu template="partials/navigation.html" %}
+{% else %}
+{% flat_menu LANGUAGE_CODE template="partials/navigation.html" fall_back_to_default_site_menus=True %}
+{% endif %}
     {% block main %}
     <section class="bg-info" id="welcome">
         <div class="container">
