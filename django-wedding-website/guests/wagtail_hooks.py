@@ -1,7 +1,7 @@
 from wagtail.contrib.modeladmin.options import ModelAdmin, ModelAdminGroup, modeladmin_register
 from wagtail.contrib.modeladmin.helpers import ButtonHelper
 from .models import Party, Guest
-from guests.views import save_the_dates_send,rsvp_send
+from guests.views import save_the_dates_send,rsvp_send,new_dashboard
 from wagtail import hooks
 from wagtail.admin.menu import MenuItem
 from django.urls import path, reverse
@@ -95,6 +95,12 @@ def register_send_stds_menu_item():
 def register_send_individual_RSVP():
     return [
         path('send-rsvp-individual',rsvp_send,name='send-rsvp-individual')
+    ]
+
+@hooks.register('register_admin_url')
+def register_new_dashboard():
+    return [
+        path('new-dashboard',new_dashboard,name='new-dashboard')
     ]
 
 @hooks.register('register_admin_menu_item')
