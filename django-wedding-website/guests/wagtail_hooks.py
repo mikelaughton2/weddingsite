@@ -7,6 +7,7 @@ from wagtail.admin.menu import MenuItem
 from django.urls import path, reverse
 from django.utils.translation import gettext as _
 from wagtail.admin.edit_handlers import InlinePanel
+from wagtail.admin.panels import ObjectList
 from django.db import models
 
 class PartyExtraButtons(ButtonHelper):
@@ -59,9 +60,9 @@ class PartyAdmin(ModelAdmin):
     def my_custom_panels(self,custom_panels):
         self.edit_handler = self.get_edit_handler()+ObjectList(custom_panels)
 
-    def __init__(self,custom_panels):
-        super().__init__(self)
-        self.my_custom_panels(custom_panels)
+    def __init__(self):
+        super().__init__()
+        self.my_custom_panels(self.custom_panels)
 
 
 class GuestAdmin(ModelAdmin):
@@ -81,7 +82,7 @@ class PartyGuest(ModelAdminGroup):
     menu_order = 200
     items = (PartyAdmin,GuestAdmin)
 
-modeladmin_register(PartyGuest)
+modeladmin_register(PartyAdmin)
 
 @hooks.register('register_admin_url')
 def register_send_stds():
