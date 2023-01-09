@@ -9,34 +9,52 @@
   <div class="container-fluid">
     <!-- brand and toggle -->
     <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <button type="button"
+                class="navbar-toggle collapsed"
+                data-toggle="collapse"
+                data-target="#bs-example-navbar-collapse-1">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand page-scroll" href="#page-top">{{ settings.babtyno.NewlyWedSetting.newlyweds }}</a>
+        <a class="navbar-brand page-scroll" href="#page-top">
+          {{ settings.babtyno.NewlyWedSetting.newlyweds }}
+        </a>
     </div>
     <!-- /brand and toggle -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav navbar-right">
-
             {% for item in menu_items %}
               <li>
-                <a class="{{ item.active_class }} page-scroll navbar-brand" href="{{ item.href }}">{{item.text}}</a>
+                <a class="{{ item.active_class }} page-scroll navbar-brand"
+                  href="{{ item.href }}">{{ item.text }}</a>
               </li>
             {% empty %}
-             {% main_menu %}
+             <div class="alert alert-warning">
+               The menu is not configured for {% get_language_info for LANGUAGE_CODE as lang %}{{ lang.name_local }}. Create a flat menu for this language first!
+             </div>
             {% endfor %}
 
+        {# Language switcher #}
         {% if page %}
-            {% for translation in page.get_translations.live %}
+        {% with page.get_translations.live as translations %}
+          {% if translations|length > 0 %}
+          <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-globe"></span> {{ lang.name_local }}<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              {% for translation in translations %}
               {% get_language_info for translation.locale.language_code as lang %}
-              <li><a class="btn btn-default" href="{% pageurl translation %}" rel="alternate" hreflang="{{ language_code }}">
+              <li><a class="btn btn-default" href="{% pageurl translation %}" rel="alternate" hreflang="{{ lang.language_code }}">
                   {% if forloop.first%}<span class="glyphicon glyphicon-globe" aria-hidden="true"></span>{% endif %}  {{ lang.name_local }}
               </a></li>
-        {% endfor %}
+              {% endfor %}
+            </ul>
+            </li>
+            {% endif %}
+        {% endwith %}
         {% endif %}
+        {# End language switcher #}
       </ul>
       </div>
     </div>

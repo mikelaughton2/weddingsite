@@ -16,6 +16,7 @@ from wagtail.contrib.settings.models import (
     BaseSiteSetting,
     register_setting,
 )
+from bigday.settings import LANGUAGE_CODE
 
 @register_setting
 class NewlyWedSetting(BaseSiteSetting):
@@ -58,6 +59,12 @@ class HomePage(Page):
         FieldPanel('tripanel_nav',help_text="Pick the row of three pictures!"),
             ]
     template = "home.html"
+    def get_context(self,*args,**kwargs):
+        context = super().get_context(*args,**kwargs)
+        #Get default language, default language == main menu (default)
+        #Language that isn't this == flat menu with the relevant language code
+        context['default_language'] = LANGUAGE_CODE
+        return context
 
 class BlogPost(Page):
     pass
@@ -68,6 +75,12 @@ class SimplePage(Page):
         FieldPanel('body',help_text="Your text")
     ]
     template = "simplepage.html"
+    def get_context(self,*args,**kwargs):
+        context = super().get_context(*args,**kwargs)
+        #Get default language, default language == main menu (default)
+        #Language that isn't this == flat menu with the relevant language code
+        context['default_language'] = LANGUAGE_CODE
+        return context
 
 class RSVP(Page):
     welcome_text = RichTextField(blank=True)

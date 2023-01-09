@@ -20,6 +20,10 @@ class InviteEmailTestCase(TestCase):
             #     ),
         }
 
+        self.initial_email_context = {
+
+        }
+
         self.std_initial = {
             'id': 1,
             'title': 'Save The Date (EN)',
@@ -45,6 +49,10 @@ class InviteEmailTestCase(TestCase):
             'is_child': False
             }
 
+        self.page_initial = {
+
+        }
+
     def setUp(self):
         self.initialise()
         self.rsvp_test = RSVPEmail.objects.create(
@@ -65,6 +73,7 @@ class InviteEmailTestCase(TestCase):
         self.assertEquals(get_RSVP_template_from_party(self.party),self.rsvp_test)
 
     def test_get_invitation_context(self):
+        #Test whether the RSVP email gets passed to the context properly
         self.assertEquals(
             get_invitation_context(self.party).email,self.rsvp_test
         )

@@ -23,53 +23,30 @@
         .navbar a {
           color: #f05f40 !important;
         }
+
+        .navbar button {
+
+        }
       </style>
 {% endblock %}
 {% block page_content %}
 {% get_current_language as LANGUAGE_CODE %}
-{% if LANGUAGE_CODE == "en-gb" %}
-{% main_menu template="partials/navigation.html" %}
+{# If we're in default language, load main menu. If not, try to find a language-appropriate menu. If that fails, show a warning sign. #}
+{% get_language_info for LANGUAGE_CODE as lang %}
+{% if LANGUAGE_CODE == default_language %}
+  {% main_menu template="partials/navigation.html" %}
 {% else %}
-{% flat_menu LANGUAGE_CODE template="partials/navigation.html" fall_back_to_default_site_menus=True %}
+  {% flat_menu handle=LANGUAGE_CODE as trymenu %}
+    {% if trymenu|length > 0 %}
+      {% flat_menu LANGUAGE_CODE template="partials/navigation.html" %}
+    {% else %}
+    <div class="alert alert-warning">
+      {% blocktranslate %}The menu is not configured for {{ lang.name_local }}. Create a flat menu for this language first!{% endblocktranslate %}
+    </div>
+    {% endif %}
+
 {% endif %}
-{% comment %}
-    <nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
-        <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand page-scroll" href="#page-top">{{ settings.babtyno.NewlyWedSetting.newlyweds }}</a>
-            </div>
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right">
-                    <!-- New HTMLs -->
-                    {% main_menu %}
-                    {% for item in menu_items %}
-                    <li  style="color: #f05f40 !important;">
-                      <a class="page-scroll navbar-brand" href="{{ item.href }}">{{ item.text }}</a>
-                    </li>
-                    {% endfor %}
-                </ul>
-                {% if page %}
-                    {% for translation in page.get_translations.live %}
-                      {% get_language_info for translation.locale.language_code as lang %}
-                      <a class="btn btn-default" href="{% pageurl translation %}" rel="alternate" hreflang="{{ language_code }}">
-                          {% if forloop.first%}<span class="glyphicon glyphicon-globe" aria-hidden="true"></span>{% endif %}{{ lang.name_local }}
-                      </a>
-                      {% endfor %}
-                  {% endif %}
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container-fluid -->
-    </nav>
-{% endcomment %}
+
     {% block main %}
     <header id="main-header">
         <div class="header-content">
