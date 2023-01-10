@@ -57,20 +57,20 @@ class Party(ClusterableModel):
         return cls.objects.order_by('category', '-is_invited', 'name')
 
     @property
-    def guest__set(self):
+    def guest_set(self):
         return Guest.objects.filter(party=self)
 
     @property
     def ordered_guests(self):
-        return self.guest__set.order_by('is_child', 'pk')
+        return self.guest_set.order_by('is_child', 'pk')
 
     @property
     def any_guests_attending(self):
-        return any(self.guest__set.values_list('is_attending', flat=True))
+        return any(self.guest_set.values_list('is_attending', flat=True))
 
     @property
     def guest_emails(self):
-        return list(filter(None, self.guest__set.values_list('email', flat=True)))
+        return list(filter(None, self.guest_set.values_list('email', flat=True)))
 
     class Meta:
         verbose_name_plural = "Parties"

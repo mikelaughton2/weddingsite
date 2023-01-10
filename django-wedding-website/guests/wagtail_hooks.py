@@ -3,6 +3,7 @@ from wagtail.contrib.modeladmin.helpers import ButtonHelper
 from .models import Party, Guest
 from guests.views import save_the_dates_send, rsvp_send, new_dashboard
 from wagtail import hooks
+from wagtail.admin.panels import FieldPanel
 from wagtail.admin.menu import MenuItem
 from django.urls import path, reverse
 from django.utils.translation import gettext as _
@@ -53,16 +54,22 @@ class PartyAdmin(ModelAdmin):
     inspect_view_enabled = True
     # inspect_view_fields = ("guest_set",)
     button_helper_class = PartyExtraButtons
-    custom_panels = [
-        InlinePanel("guests",label="guests"),
+    panels = [
+        FieldPanel("name",heading="Name"),
+        FieldPanel("type",heading="Type"),
+        FieldPanel("save_the_date_template",heading="Save the date template"),
+        FieldPanel("save_the_date_sent",heading="Save the date sent"),
+        FieldPanel("save_the_date_opened",heading="Save the date opened"),
+        FieldPanel("rsvp_template",heading="RSVP Template"),
+        FieldPanel("invitation_sent",heading="Invitation sent"),
+        FieldPanel("invitation_opened",heading="Invitation opened"),
+        FieldPanel("category",heading="Category"),
+        FieldPanel("is_invited",heading="Is invited"),
+        FieldPanel("rehearsal_dinner",heading="Rehearsal dinner"),
+        FieldPanel("is_attending",heading="Is attending"),
+        FieldPanel("comments",heading="Comments"),
+        InlinePanel("guests",heading="Guests"),
     ]
-
-    def my_custom_panels(self,custom_panels):
-        self.edit_handler = self.get_edit_handler()+ObjectList(custom_panels)
-
-    def __init__(self):
-        super().__init__()
-        self.my_custom_panels(self.custom_panels)
 
 
 class GuestAdmin(ModelAdmin):
