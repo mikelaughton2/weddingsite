@@ -4,6 +4,11 @@ import uuid
 
 from django.db import models
 from django.dispatch import receiver
+from wagtail.models import Orderable,ClusterableModel
+from wagtail.admin.edit_handlers import InlinePanel
+from wagtail.admin.panels import ObjectList
+from modelcluster.fields import ParentalKey
+
 
 # these will determine the default formality of correspondence
 ALLOWED_TYPES = [
@@ -17,7 +22,7 @@ def _random_uuid():
     return uuid.uuid4().hex
 
 
-class Party(models.Model):
+class Party(ClusterableModel):
     """
     A party consists of one or more guests.
     """
@@ -32,6 +37,7 @@ class Party(models.Model):
         blank=True,
         null=True,
     )
+
     category = models.CharField(max_length=20, null=True, blank=True)
     save_the_date_sent = models.DateTimeField(null=True, blank=True, default=None)
     save_the_date_opened = models.DateTimeField(null=True, blank=True, default=None)
@@ -49,6 +55,10 @@ class Party(models.Model):
     @classmethod
     def in_default_order(cls):
         return cls.objects.order_by('category', '-is_invited', 'name')
+
+    @property
+    def guest_set(self):
+        return Guest.objects.filter(party=self)
 
     @property
     def ordered_guests(self):
@@ -73,11 +83,11 @@ MEALS = [
 ]
 
 
-class Guest(models.Model):
+class Guest(Orderable):
     """
     A single guest
     """
-    party = models.ForeignKey('Party', on_delete=models.CASCADE)
+    party = ParentalKey('Party', on_delete=models.CASCADE,related_name='guests')
     first_name = models.TextField()
     last_name = models.TextField(null=True, blank=True)
     email = models.TextField(null=True, blank=True)
