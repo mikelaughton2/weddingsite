@@ -6,34 +6,48 @@ Based on [django-wedding-website](https://github.com/czue/django-wedding-website
 
 This includes everything we did for our own wedding:
 
-- A responsive, single-page traditional wedding website
-- New: CMS to make the single-page website more customisable within the template
+- A responsive, multi-page website
+- New: Websites are configurable to be multilingual
+- New: Intuitive CMS to make the single-page website more customisable within the template
 - A complete guest management application
-- Email framework for sending save the dates
+- New: GUI email framework for sending save the dates to your guests
 - New: Customisable save-the-dates and RSVP emails
 - New: Some multilingual support for the outward facing website
-- Email framework for invitations and built in RSVP system
-- Planned: Models for invitations to send customisable save the dates
-- New: MJML emails for better responsiveness
-- New: GUI for sending save-the-dates and invitations within the CMS instead of the command line
+- New: Email framework for invitations and built-in RSVP system. Emails are responsive and customisable
+- New: Models for invitations to send customisable save the dates
 - Guest dashboard
 
 More details on these below.
 
 ### The "Standard" Wedding Website
 
-The standard wedding website is a responsive, single-page, twitter bootstrap-based site (using a modified version of
+The standard wedding website is a responsive, twitter bootstrap-based site (using a modified version of
 [this theme](https://blackrockdigital.github.io/startbootstrap-creative/)).
 
-It is completely customizable to your needs and the content is laid out in standard django templates. By default it includes:
+It is completely customisable to your needs and the content is laid out in standard django templates. By default it includes:
 
 - A "hero" splash screen for a photo
 - A mobile-friendly top nav with scrollspy
 - A photo/hover navigation pane
-- Configurable content sections for every aspect of your site that you want
+- Configurable content sections for every aspect of your site that you want within the CMS
 - A set of different styles you can use for different sections
 
 ![Hero Section of Wedding Website](https://raw.githubusercontent.com/czue/django-wedding-website/master/screenshots/hero-page.png)
+
+### Multilingual websites
+Adjust your settings.py file to include something like:
+
+```python
+WAGTAIL_CONTENT_LANGUAGES = LANGUAGES = [
+
+    ('en-gb','English (British)'),
+    ('es','Spanish'),
+    ('fr','French'),
+]
+```
+Go to settings>locales, add corresponding locales. Sync pages and include translations.
+
+Create multilingual menus - for default site, Main Menu; for translations, Flat Menus with the *handle* containing language code. In the example above, the flat menu would be called ```fr```.
 
 ### Guest management
 
@@ -50,10 +64,7 @@ There's also a field to track whether the party is invited to the rehearsal dinn
 
 The `Guest` model contains all of your individual guests.
 In addition to standard name/email it has fields to represent whether the guest is a child (for kids meals/pricing differences),
-and, after sending invitations, marking whether the guest is attending and what meal they are having.
-
-### GuestEmail model
-TBD
+and, after sending invitations, marking whether the guest is attending and what meal they are having
 
 #### Excel import/export
 
@@ -98,6 +109,7 @@ It's a great way of tracking your big picture numbers in terms of how many guest
 Just access `/dashboard/` from an account with admin access. Your other guests won't be able to see it.
 
 ![Wedding Dashboard](https://raw.githubusercontent.com/czue/django-wedding-website/master/screenshots/wedding-dashboard.png)
+Preview is out of date here
 
 ### Other details
 
