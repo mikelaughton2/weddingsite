@@ -1,18 +1,20 @@
 from wagtail.contrib.modeladmin.options import ModelAdmin, ModelAdminGroup, modeladmin_register
 from wagtail.contrib.modeladmin.helpers import ButtonHelper
 from .models import Party, Guest
-from guests.views import save_the_dates_send,rsvp_send,new_dashboard
+from guests.views import save_the_dates_send, rsvp_send, new_dashboard
 from wagtail import hooks
+from wagtail.admin.panels import FieldPanel
 from wagtail.admin.menu import MenuItem
 from django.urls import path, reverse
 from django.utils.translation import gettext as _
-
+from wagtail.admin.edit_handlers import InlinePanel
+from wagtail.admin.panels import ObjectList
 from django.db import models
 
 class PartyExtraButtons(ButtonHelper):
 
     send_button_classnames = ["button-small","icon","icon-site"]
-
+    #This needs fixing
     def send_STD_button(self,obj):
         text = _("Send Save The Date")
         return {
@@ -47,9 +49,28 @@ class PartyAdmin(ModelAdmin):
     menu_order = 200
     add_to_settings_menu = False
     exclude_from_explorer = False
-    list_display = ("name","guest_emails","any_guests_attending","save_the_date_sent","invitation_sent")
+    list_display = ("name","guest_emails","any_guests_attending","save_the_date_sent","invitation_sent",)
     search_fields = ("name",)
+    inspect_view_enabled = True
+    # inspect_view_fields = ("guest_set",)
     button_helper_class = PartyExtraButtons
+    panels = [
+        FieldPanel("name",heading="Name"),
+        FieldPanel("type",heading="Type"),
+        FieldPanel("save_the_date_template",heading="Save the date template"),
+        FieldPanel("save_the_date_sent",heading="Save the date sent"),
+        FieldPanel("save_the_date_opened",heading="Save the date opened"),
+        FieldPanel("rsvp_template",heading="RSVP Template"),
+        FieldPanel("invitation_sent",heading="Invitation sent"),
+        FieldPanel("invitation_opened",heading="Invitation opened"),
+        FieldPanel("category",heading="Category"),
+        FieldPanel("is_invited",heading="Is invited"),
+        FieldPanel("rehearsal_dinner",heading="Rehearsal dinner"),
+        FieldPanel("is_attending",heading="Is attending"),
+        FieldPanel("comments",heading="Comments"),
+        InlinePanel("guests",heading="Guests"),
+    ]
+
 
 class GuestAdmin(ModelAdmin):
     model = Guest
@@ -68,7 +89,7 @@ class PartyGuest(ModelAdminGroup):
     menu_order = 200
     items = (PartyAdmin,GuestAdmin)
 
-modeladmin_register(PartyGuest)
+modeladmin_register(PartyAdmin)
 
 @hooks.register('register_admin_url')
 def register_send_stds():
@@ -78,24 +99,23 @@ def register_send_stds():
 
 @hooks.register('register_admin_menu_item')
 def register_send_stds_menu_item():
-    return MenuItem('Send Save The Dates',reverse('guests:send-save-the-dates'),icon_name='date')
+    return MenuItem('Send STDs',reverse('guests:send-save-the-dates'),icon_name='date')
 
 @hooks.register('register_admin_url')
 def register_invitation():
         return [
-            path('send_rsvps',rsvp_send,name='send_rsvps'),
+            path('send_rsvps/',rsvps_send,name='send_rsvps'),
         ]
-
-@hooks.register('register_admin_menu_item')
-def register_send_stds_menu_item():
-    return MenuItem('Send Save RSVPs',reverse('guests:send-rsvps'),icon_name='date')
-
 
 @hooks.register('register_admin_url')
 def register_send_individual_RSVP():
     return [
-        path('send-rsvp-individual',rsvp_send,name='send-rsvp-individual')
+        path('send-rsvp-individual/',rsvp_send,name='send-rsvp-individual'),
     ]
+
+# @hooks.register('register_admin_menu_item')
+# def register_rsvp_send_menu_item():
+#     return MenuItem('Send RSVPs',reverse('guests:send-rsvps'),icon_name='envelope'),
 
 @hooks.register('register_admin_urls')
 def register_new_dashboard():
