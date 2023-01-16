@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+{% load wagtailcore_tags %}
+{% load wagtailimages_tags %}
+{% load wagtailsettings_tags %}
+{% get_settings %}
+{% load i18n wagtailcore_tags %}
+{% load menu_tags %}
+{% block page_head %}
+  <title>{{ title }}</title>
+{% endblock %}
+
+{% block page_content %}
+{% get_current_language as LANGUAGE_CODE %}
+{# If we're in default language, load main menu. If not, try to find a language-appropriate menu. If that fails, show a warning sign. #}
+{% get_language_info for LANGUAGE_CODE as lang %}
+{% if LANGUAGE_CODE == default_language %}
+  {% main_menu template="partials/navigation.html" %}
+{% else %}
+  {% flat_menu handle=LANGUAGE_CODE as trymenu %}
+    {% if trymenu|length > 0 %}
+      {% flat_menu LANGUAGE_CODE template="partials/navigation.html" %}
+    {% else %}
+    <div class="alert alert-warning">
+      {% blocktranslate %}The menu is not configured for {{ lang.name_local }}. Create a flat menu for this language first!{% endblocktranslate %}
+    </div>
+    {% endif %}
+
+{% endif %}
+{% block main %}
+  <section class="" id="welcome">
+    <div class="container">
+      <div class="row">
+ {% for guest in guests %}
+ <h1>{{ guest.name }}</h1>
+ <p>Will eat: </p>
+ <h2>Appetiser</h2>
+   {% for key,values in appetisers.items %}
+  <h3>{{ key }}</h3>
+    {% for value in values %}
+      <p><input type="radio">{{ value.title }}</p>
+    {% endfor %}
+   {% endfor %}
+   <h2>Starters</h2>
+   {% for key,values in starters.items %}
+   <h3>{{ key }}</h3>
+     {% for value in values %}
+       <p><input type="radio">{{ value.title }}</p>
+     {% endfor %}
+   {% endfor %}
+   <h2>Mains</h2>
+   {% for key,values in mains.items %}
+   <h3>{{ key }}</h3>
+     {% for value in values %}
+       <p><input type="radio" value="{{value}}">{{ value.title }}</p>
+     {% endfor %}
+   {% endfor %}
+   <h3>Desserts</h3>
+   {% for key,values in desserts.items %}
+   <h3>{{ key }}</h3>
+     {% for value in values %}
+       <p><input type="radio">{{ value.title }}</p>
+     {% endfor %}
+   {% endfor %}
+ {% endfor %}
+      </div>
+    </div>
+  </section>
+ {% endblock %}
+{% endblock %}

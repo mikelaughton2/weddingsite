@@ -1,6 +1,6 @@
 from wagtail.contrib.modeladmin.options import ModelAdmin, ModelAdminGroup, modeladmin_register
 from wagtail.contrib.modeladmin.helpers import ButtonHelper
-from .models import Party, Guest
+from .models import Party, Guest, Menu, Dish
 from guests.views import save_the_dates_send, rsvp_send, new_dashboard
 from wagtail import hooks
 from wagtail.admin.panels import FieldPanel
@@ -10,6 +10,7 @@ from django.utils.translation import gettext as _
 from wagtail.admin.edit_handlers import InlinePanel
 from wagtail.admin.panels import ObjectList
 from django.db import models
+from django import forms
 
 class PartyExtraButtons(ButtonHelper):
 
@@ -49,7 +50,7 @@ class PartyAdmin(ModelAdmin):
     menu_order = 200
     add_to_settings_menu = False
     exclude_from_explorer = False
-    list_display = ("name","guest_emails","any_guests_attending","save_the_date_sent","invitation_sent",)
+    list_display = ("name","ordered_guests","guest_emails","any_guests_attending","save_the_date_sent","invitation_sent",)
     search_fields = ("name",)
     inspect_view_enabled = True
     # inspect_view_fields = ("guest_set",)
@@ -63,6 +64,7 @@ class PartyAdmin(ModelAdmin):
         FieldPanel("rsvp_template",heading="RSVP Template"),
         FieldPanel("invitation_sent",heading="Invitation sent"),
         FieldPanel("invitation_opened",heading="Invitation opened"),
+        FieldPanel("invitation_id"),
         FieldPanel("category",heading="Category"),
         FieldPanel("is_invited",heading="Is invited"),
         FieldPanel("rehearsal_dinner",heading="Rehearsal dinner"),
@@ -76,20 +78,42 @@ class GuestAdmin(ModelAdmin):
     model = Guest
     menu_label = "Guests"
     menu_icon = "pick"
-    menu_order = 201
+    menu_order = 151
     add_to_settings_menu = False
     exclude_from_explorer = False
     list_display = ("first_name","last_name","party","email")
     search_fields=("first_name","last_name","party","email")
     list_filter=("party",)
+    panels = [
+        FieldPanel("party",heading="party"),
+        FieldPanel("first_name"),
+        FieldPanel("last_name"),
+        FieldPanel("email"),
+        FieldPanel("is_attending"),
+        FieldPanel("is_child"),
+        FieldPanel("meal"),
+        FieldPanel("dishes",heading=_("Meal"),widget=forms.CheckboxSelectMultiple)
+    ]
 
 class PartyGuest(ModelAdminGroup):
     menu_label = "Guests"
     menu_icon = "group"
-    menu_order = 200
+    menu_order = 150
     items = (PartyAdmin,GuestAdmin)
 
+class MenuAdmin(ModelAdmin):
+    model = Menu
+    menu_label = "Food Menus"
+    menu_icon = "group"
+    menu_order = 200
+    panels = [
+        FieldPanel("name",heading="Name"),
+        InlinePanel("dish",heading="Dishes",label="Dish"),
+    ]
+
 modeladmin_register(PartyAdmin)
+modeladmin_register(GuestAdmin)
+modeladmin_register(MenuAdmin)
 
 @hooks.register('register_admin_url')
 def register_send_stds():
@@ -125,4 +149,4 @@ def register_new_dashboard():
 
 @hooks.register('register_admin_menu_item')
 def register_new_dashboard_item():
-    return MenuItem('Dashboard',reverse('new_dashboard'),icon_name='order')
+    return MenuItem('Dashboard',reverse('new_dashboard'),icon_name='order',order=0)

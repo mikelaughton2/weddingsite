@@ -7,8 +7,14 @@ from django.dispatch import receiver
 from wagtail.models import Orderable,ClusterableModel
 from wagtail.admin.edit_handlers import InlinePanel
 from wagtail.admin.panels import ObjectList
-from modelcluster.fields import ParentalKey
-
+from modelcluster.fields import ParentalKey, ParentalManyToManyField
+from wagtail.snippets.models import register_snippet
+from django.utils.translation import gettext as _
+from django.utils.translation import pgettext as pg_
+from wagtail.models import TranslatableMixin
+from wagtail.search import index
+from wagtail.admin.panels import FieldPanel
+from wagtail.admin.edit_handlers import InlinePanel
 
 # these will determine the default formality of correspondence
 ALLOWED_TYPES = [
@@ -73,7 +79,7 @@ class Party(ClusterableModel):
         return list(filter(None, self.guest_set.values_list('email', flat=True)))
 
     class Meta:
-        verbose_name_plural = "Parties"
+        verbose_name_plural = _("Parties")
 
 MEALS = [
     ('beef', 'cow'),
@@ -82,18 +88,55 @@ MEALS = [
     ('vegetarian', 'vegetable'),
 ]
 
+COURSES = [
+    ('app',pg_('In context of menu','Appetiser')),
+    ('starter',pg_('In context of menu','Starter')),
+    ('main',pg_('In context of menu','Main')),
+    ('dessert',pg_('In context of menu','Dessert')),
+]
+
+class Menu(ClusterableModel):
+    name = models.TextField(help_text=_("Vegan? Gluten-free? For Anglophones? For non-Anglophones?"))
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+@register_snippet
+class Dish(index.Indexed,TranslatableMixin,Orderable):
+    menu = ParentalKey('Menu',on_delete=models.PROTECT,related_name="dish")
+    type = models.CharField(max_length=20,choices=COURSES,null=True,blank=True)
+    title = models.TextField(help_text=_("Name of the dish"))
+    description = models.TextField(help_text=_("Description of the dish"),blank=True,null=True)
+    comments = models.TextField(help_text=_("Say if it's vegan, veggie, gluten-free, halal, kosher, etc."),blank=True,null=True)
+
+    panels = [
+        # FieldPanel('locale'),
+        FieldPanel('type'),
+        FieldPanel('title'),
+        FieldPanel('description'),
+        FieldPanel('comments'),
+    ]
+
+    search_fields = [index.SearchField('title',partial_match=True),]
+
+    def __str__(self):
+        return "{} {}".format(self.get_type_display(),self.title)
+
+    class Meta(TranslatableMixin.Meta):
+        verbose_name_plural = _("Dishes")
 
 class Guest(Orderable):
     """
     A single guest
     """
-    party = ParentalKey('Party', on_delete=models.CASCADE,related_name='guests')
+    party = ParentalKey('Party', on_delete=models.PROTECT,related_name='guests')
     first_name = models.TextField()
     last_name = models.TextField(null=True, blank=True)
     email = models.TextField(null=True, blank=True)
     is_attending = models.BooleanField(default=None, null=True)
     meal = models.CharField(max_length=20, choices=MEALS, null=True, blank=True)
     is_child = models.BooleanField(default=False)
+    dishes = ParentalManyToManyField("Dish",related_name="dishes",null=True,blank=True)
 
     @property
     def name(self):
