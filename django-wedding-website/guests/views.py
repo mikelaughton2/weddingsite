@@ -9,14 +9,13 @@ from django.db.models import Count, Q
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
-from django.views.generic.edit import UpdateView
 from guests import csv_import
 from guests.invitation import get_invitation_context, INVITATION_TEMPLATE, guess_party_by_invite_id_or_404, \
     send_invitation_email, get_RSVP_template_from_party, send_all_invitations
-from guests.models import Guest, MEALS, Party, Dish, Menu
+from guests.models import Guest, MEALS, Party, Menu, Dish
 from guests.save_the_date import get_save_the_date_context, send_save_the_date_email, SAVE_THE_DATE_TEMPLATE, \
     send_all_save_the_dates
-from .forms import ConfirmForm, GuestForm
+from .forms import ConfirmForm
 from django.utils.translation import gettext as _
 from babtynoemail.models import RSVPEmail
 from babtyno.models import NewlyWedSetting, EmailSettings
@@ -268,33 +267,27 @@ def _base64_encode(filepath):
     with open(filepath, "rb") as image_file:
         return base64.b64encode(image_file.read())
 
-# class FollowUpView(FormView):
-#     template_name = "guests/followupquestion.html"
-#     form_class = DishesForm
-#     success_url = "/"
-
-class GuestFormView(UpdateView):
-
-    template_name_suffix = '_follow_up'
-    form_class = GuestForm
-    success_url = '/en-gb'
-
 def GuestMenuFollowUp(request,invite_id):
     party = guess_party_by_invite_id_or_404(invite_id)
     guests = party.ordered_guests
     menus = Menu.objects.all()
-    appetisers,starters,mains,desserts = {},{},{},{}
+    appetisers = {}
+    starters = {}
+    mains = {}
+    desserts = {}
     for m in menus:
         appetisers[m] = Dish.objects.filter(menu=m).filter(type='app')
         starters[m] = Dish.objects.filter(menu=m).filter(type='starter')
         mains[m] = Dish.objects.filter(menu=m).filter(type='main')
         desserts[m] = Dish.objects.filter(menu=m).filter(type='dessert')
-    if request.method == "GET":
-        return render(request,"guests/followupquestion.html",context={
-            'guests': guests,
-            'menus':menus,
-            'appetisers':appetisers,
-            'starters':starters,
-            'mains':mains,
-            'desserts':desserts,
-        })
+    return render(request, "guests/followupquestion.html", context =
+        {
+        'menus':menus,
+        'appetisers':appetisers,
+        'starters':starters,
+        'mains':mains,
+        'desserts':desserts,
+        'guests':guests,
+        'party':party,
+        }
+        )

@@ -28,43 +28,87 @@
 
 {% endif %}
 {% block main %}
-  <section class="" id="welcome">
-    <div class="container">
+  <section class="no-padding" id="welcome">
+    <div class="container-fluid">
       <div class="row">
- {% for guest in guests %}
- <h1>{{ guest.name }}</h1>
- <p>Will eat: </p>
- <h2>Appetiser</h2>
-   {% for key,values in appetisers.items %}
-  <h3>{{ key }}</h3>
-    {% for value in values %}
-      <p><input type="radio">{{ value.title }}</p>
-    {% endfor %}
-   {% endfor %}
-   <h2>Starters</h2>
-   {% for key,values in starters.items %}
-   <h3>{{ key }}</h3>
-     {% for value in values %}
-       <p><input type="radio">{{ value.title }}</p>
-     {% endfor %}
-   {% endfor %}
-   <h2>Mains</h2>
-   {% for key,values in mains.items %}
-   <h3>{{ key }}</h3>
-     {% for value in values %}
-       <p><input type="radio" value="{{value}}">{{ value.title }}</p>
-     {% endfor %}
-   {% endfor %}
-   <h3>Desserts</h3>
-   {% for key,values in desserts.items %}
-   <h3>{{ key }}</h3>
-     {% for value in values %}
-       <p><input type="radio">{{ value.title }}</p>
-     {% endfor %}
-   {% endfor %}
- {% endfor %}
+        <div class="col-lg-8 col-lg-offset-2 text-left">
+          <div class="btn-group" role="group">
+          {% for menu in menus %}
+            {% with sloog1=menu.name|slugify %}
+            <button class="btn btn-default" type="button"
+            data-target="{% for menu in menus %}{% if menu.name|slugify != sloog1 %}.div_{{menu.name|slugify}}{% if not forloop.last and menus|length > 1 %},{% endif %}{% endif %} {% endfor %}"
+            {# data-toggle="collapse" #}
+            id="button_{{menu.name|slugify}}">
+              {{ menu.name }}
+            </button>
+            {% endwith %}
+          {% endfor %}
+          </div>
+           {% for guest in guests %}
+           <h1>{{ guest.name }}</h1>
+           <p>Will eat: </p>
+           <h2>Appetiser</h2>
+             {% for key,values in appetisers.items %}
+             <div class="div_{{ key|slugify }} collapse {% if forloop.first %}in{% endif %}" aria-expanded="{% if not forloop.first %}false{% endif %}"">
+              {% for value in values %}
+                <p><input type="radio">{{ value.title }}</p>
+              {% endfor %}
+            </div>
+             {% endfor %}
+             <h2>Starters</h2>
+             {% for key,values in starters.items %}
+             <div class="div_{{ key|slugify }} collapse {% if forloop.first %}in{% endif %}" aria-expanded="{% if not forloop.first %}false{% endif %}"">
+               {% for value in values %}
+                 <p><input type="radio">{{ value.title }}</p>
+               {% endfor %}
+             </div>
+             {% endfor %}
+             <h2>Mains</h2>
+             {% for key,values in mains.items %}
+             <div class="div_{{ key|slugify }} {% if not forloop.first %}collapse{% endif %}">
+               {% for value in values %}
+                 <p><input type="radio" value="{{value}}">{{ value.title }}</p>
+               {% endfor %}
+            </div>
+             {% endfor %}
+             <h3>Desserts</h3>
+             {% for key,values in desserts.items %}
+             <div class="div_{{ key|slugify }} {% if not forloop.first %}collapse{% endif %}">
+               {% for value in values %}
+                 <p><input type="radio" value="{{ value }}">{{ value.title }}</p>
+               {% endfor %}
+             </div>
+             {% endfor %}
+           {% endfor %}
+        </div>
       </div>
     </div>
   </section>
  {% endblock %}
+{% endblock %}
+{% block page_js %}
+    <script src="{% static 'bootstrap-3.3.6-dist/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'creative/js/jquery.easing.min.js' %}"></script>
+<!-- Automatically fit text based on screen size.-->
+<script src="{% static 'creative/js/jquery.fittext.js' %}"></script>
+<!-- Custom Theme JavaScript -->
+<script src="{% static 'creative/js/creative.js' %}"></script>
+
+<script>
+  {% for menu in menus %}
+  {% with sloog1=menu.name|slugify %}
+  $('#button_{{sloog1}}').click(function(){
+    $('.div_{{sloog1}}').collapse('show');
+    {% for menu in menus %}
+      {% with sloog2=menu.name|slugify %}
+        {% if sloog2 != sloog1 %}
+        $('.div_{{ sloog2 }}').collapse('hide');
+        {% endif %}
+      {% endwith %}
+    {% endfor %}
+  })
+  {% endwith %}
+  {% endfor %}
+  </script>
+
 {% endblock %}
