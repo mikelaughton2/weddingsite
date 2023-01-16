@@ -36,7 +36,7 @@
           {% for menu in menus %}
             {% with sloog1=menu.name|slugify %}
             <button class="btn btn-default" type="button"
-            data-target="{% for menu in menus %}{% if menu.name|slugify != sloog1 %}.div_{{menu.name|slugify}}{% if not forloop.last and menus|length > 1 %},{% endif %}{% endif %} {% endfor %}"
+            data-target="{% for menu in menus %}{% if menu.name|slugify != sloog1 %}.div_{{menu.name|slugify}}{% if not forloop.last and menus|length > 2 and not forloop.last %},{% endif %}{% endif %} {% endfor %}"
             {# data-toggle="collapse" #}
             id="button_{{menu.name|slugify}}">
               {{ menu.name }}
@@ -98,7 +98,6 @@
   {% for menu in menus %}
   {% with sloog1=menu.name|slugify %}
   $('#button_{{sloog1}}').click(function(){
-    $('.div_{{sloog1}}').collapse('show');
     {% for menu in menus %}
       {% with sloog2=menu.name|slugify %}
         {% if sloog2 != sloog1 %}
@@ -106,6 +105,7 @@
         {% endif %}
       {% endwith %}
     {% endfor %}
+    $('.div_{{sloog1}}').collapse('show');
   })
   {% endwith %}
   {% endfor %}
