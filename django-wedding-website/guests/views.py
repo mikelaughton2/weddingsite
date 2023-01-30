@@ -12,13 +12,14 @@ from django.views.generic import ListView
 from guests import csv_import
 from guests.invitation import get_invitation_context, INVITATION_TEMPLATE, guess_party_by_invite_id_or_404, \
     send_invitation_email, get_RSVP_template_from_party, send_all_invitations
-from guests.models import Guest, MEALS, Party, Menu, Dish
+from guests.models import Guest, MEALS, Party, Menu, Dish, COURSES
 from guests.save_the_date import get_save_the_date_context, send_save_the_date_email, SAVE_THE_DATE_TEMPLATE, \
     send_all_save_the_dates
 from .forms import ConfirmForm
 from django.utils.translation import gettext as _
 from babtynoemail.models import RSVPEmail
 from babtyno.models import NewlyWedSetting, EmailSettings
+from bigday.settings import LANGUAGE_CODE
 
 class GuestListView(ListView):
     model = Guest
@@ -144,6 +145,14 @@ def _parse_invite_params(params):
             response = responses.get(pk, {})
             response['meal'] = value
             responses[pk] = response
+        elif param.startswith('app'):
+            pk = int(param.split('guest-')[1])
+        elif param.startswith('starter'):
+            pass
+        elif param.startswith('main'):
+            pass
+        elif param.startswith('dessert'):
+            pass
 
     for pk, response in responses.items():
         yield InviteResponse(pk, response['attending'], response.get('meal', None))
@@ -269,25 +278,43 @@ def _base64_encode(filepath):
 
 def GuestMenuFollowUp(request,invite_id):
     party = guess_party_by_invite_id_or_404(invite_id)
-    guests = party.ordered_guests
+    #Filter out anyone who said 'no'.
+    guests = party.ordered_guests.filter(is_attending=True)
     menus = Menu.objects.all()
-    appetisers = {}
-    starters = {}
-    mains = {}
-    desserts = {}
-    for m in menus:
-        appetisers[m] = Dish.objects.filter(menu=m).filter(type='app')
-        starters[m] = Dish.objects.filter(menu=m).filter(type='starter')
-        mains[m] = Dish.objects.filter(menu=m).filter(type='main')
-        desserts[m] = Dish.objects.filter(menu=m).filter(type='dessert')
-    return render(request, "guests/followupquestion.html", context =
-        {
-        'menus':menus,
-        'appetisers':appetisers,
-        'starters':starters,
-        'mains':mains,
-        'desserts':desserts,
-        'guests':guests,
-        'party':party,
-        }
-        )
+    if request.method=="POST":
+        POST_REQ = ""
+        guests_evaluated = []
+        for key,value in request.POST.items():
+            if any(key.startswith(x) for x in ["appetiser","starter","main","dessert"]):
+                dish_pk = int(value.split("-")[1])
+                # This has to be true
+                guest_pk = int(key.split("_guest-")[1])
+                guest = Guest.objects.get(pk=guest_pk)
+                if not guest in guests_evaluated:
+                    guests_evaluated.append(guest)
+                dish = Dish.objects.get(pk=dish_pk)
+                POST_REQ += "{}: Dish Name: {}<br>".format(guest.name, dish.title)
+                guest.dishes.add(dish)
+                print("adding {}".format(dish))
+                guest.save()
+
+        COURSES = ['app','starter','main','dessert']
+        STR_RESP = ""
+        for guest in guests_evaluated:
+            print(guest)
+            meal_types = [i.type for i in guest.dishes.all()]
+            if not all(x==y for x,y in zip(meal_types,COURSES)):
+                # raise Exception("Please chooose one of each course. You chose {} for {} ".format(meal_types,guest.name))
+                print("Missing courses")
+            STR_RESP += "<br>{} will have {}".format(guest.name,guest.dishes.all())
+        return HttpResponse(STR_RESP)
+
+    if request.method=="GET":
+        return render(request, "guests/followupquestion.html", context =
+            {
+            'menus':menus,
+            'guests':guests,
+            'party':party,
+            'default_language':LANGUAGE_CODE,
+            }
+            )
