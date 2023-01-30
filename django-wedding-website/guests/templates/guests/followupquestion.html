@@ -8,6 +8,12 @@
 {% load menu_tags %}
 {% block page_head %}
   <title>{{ title }}</title>
+  <link href="{% static 'bigday/css/creative.css' %}" rel="stylesheet">
+  <style type="text/css">
+    body {
+      padding-top:50px;
+    }
+    </style>
 {% endblock %}
 
 {% block page_content %}
@@ -25,61 +31,49 @@
       {% blocktranslate %}The menu is not configured for {{ lang.name_local }}. Create a flat menu for this language first!{% endblocktranslate %}
     </div>
     {% endif %}
-
 {% endif %}
 {% block main %}
   <section class="no-padding" id="welcome">
-    <div class="container-fluid">
+    <div class="container">
       <div class="row">
         <div class="col-lg-8 col-lg-offset-2 text-left">
           <div class="btn-group" role="group">
           {% for menu in menus %}
             {% with sloog1=menu.name|slugify %}
-            <button class="btn btn-default" type="button"
-            data-target="{% for menu in menus %}{% if menu.name|slugify != sloog1 %}.div_{{menu.name|slugify}}{% if not forloop.last and menus|length > 2 and not forloop.last %},{% endif %}{% endif %} {% endfor %}"
-            {# data-toggle="collapse" #}
+            <button class="btn btn-outline-dark" type="button"
+            data-target="{% for menu in menus %}
+            {% with sloog2=menu.name|slugify len=menus|length %}
+            {% if sloog2 != sloog1 %}.div_{{sloog2}}{% if not forloop.last and len > 2 and not forloop.last %},{% endif %}
+            {% endif %} {% endwith %}{% endfor %}"
             id="button_{{menu.name|slugify}}">
               {{ menu.name }}
             </button>
             {% endwith %}
           {% endfor %}
           </div>
-           {% for guest in guests %}
-           <h1>{{ guest.name }}</h1>
-           <p>Will eat: </p>
-           <h2>Appetiser</h2>
-             {% for key,values in appetisers.items %}
-             <div class="div_{{ key|slugify }} collapse {% if forloop.first %}in{% endif %}" aria-expanded="{% if not forloop.first %}false{% endif %}"">
-              {% for value in values %}
-                <p><input type="radio">{{ value.title }}</p>
+        
+          <form action="" method="post" name="meals">
+            {% csrf_token %}
+            {% for guest in guests %} {# Guest loop #}
+            <div class="col">
+              <h1>{{ guest.name }}</h1>
+              {% for menu in menus %}
+              {% with sloog1=menu.name|slugify first=forloop.first %}
+              <div class="div_{{sloog1}} collapse{% if first %} in{% endif %}"
+                aria-expanded="{{ first|yesno:'true,false' }}">
+              {% regroup menu.ordered_dishes by get_type_display as menu_dishes %} {# Order them by appetiser, starter, etc. #}
+              {% for menu_dish in menu_dishes %}
+              <h2>{{ menu_dish.grouper }}</h2>
+              {% for dish in menu_dish.list %}
+              <p><input name="{{ menu_dish.grouper|slugify }}_guest-{{ guest.pk|slugify }}" type="radio" value="dish-{{ dish.pk }}"> {{ dish.title }} {{ dish.comment }}</p>
               {% endfor %}
+              {% endfor %} {# End ordered menu loop #}
+              {% endwith %}
             </div>
-             {% endfor %}
-             <h2>Starters</h2>
-             {% for key,values in starters.items %}
-             <div class="div_{{ key|slugify }} collapse {% if forloop.first %}in{% endif %}" aria-expanded="{% if not forloop.first %}false{% endif %}"">
-               {% for value in values %}
-                 <p><input type="radio">{{ value.title }}</p>
-               {% endfor %}
-             </div>
-             {% endfor %}
-             <h2>Mains</h2>
-             {% for key,values in mains.items %}
-             <div class="div_{{ key|slugify }} {% if not forloop.first %}collapse{% endif %}">
-               {% for value in values %}
-                 <p><input type="radio" value="{{value}}">{{ value.title }}</p>
-               {% endfor %}
-            </div>
-             {% endfor %}
-             <h3>Desserts</h3>
-             {% for key,values in desserts.items %}
-             <div class="div_{{ key|slugify }} {% if not forloop.first %}collapse{% endif %}">
-               {% for value in values %}
-                 <p><input type="radio" value="{{ value }}">{{ value.title }}</p>
-               {% endfor %}
-             </div>
-             {% endfor %}
-           {% endfor %}
+            {% endfor %} {# End menu loop #}
+            {% endfor %} {# End guest loop #}
+            <input type="submit" value="submit">
+          </form>
         </div>
       </div>
     </div>
@@ -87,7 +81,7 @@
  {% endblock %}
 {% endblock %}
 {% block page_js %}
-    <script src="{% static 'bootstrap-3.3.6-dist/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'bootstrap-3.3.6-dist/js/bootstrap.min.js' %}"></script>
 <script src="{% static 'creative/js/jquery.easing.min.js' %}"></script>
 <!-- Automatically fit text based on screen size.-->
 <script src="{% static 'creative/js/jquery.fittext.js' %}"></script>

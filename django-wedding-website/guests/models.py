@@ -98,6 +98,13 @@ COURSES = [
 class Menu(ClusterableModel):
     name = models.TextField(help_text=_("Vegan? Gluten-free? For Anglophones? For non-Anglophones?"))
 
+    def ordered_dishes(self):
+        #Return dishes in order of serving... necessary for views.
+        COURSES_ORDER = (course[0] for course in COURSES)
+        order = dict((key,idx) for idx,key in enumerate(COURSES_ORDER))
+        #return order
+        return sorted(self.dish.all(), key=lambda x:order[x.type])
+
     def __str__(self):
         return "{}".format(self.name)
 
