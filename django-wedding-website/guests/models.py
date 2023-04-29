@@ -132,6 +132,10 @@ class Dish(index.Indexed,TranslatableMixin,Orderable):
     class Meta(TranslatableMixin.Meta):
         verbose_name_plural = _("Dishes")
 
+STARTERS = [(str(dish.pk),dish.title) for dish in Dish.objects.all() if dish.type=="starter"]
+MAINS = [(str(dish.pk),dish.title) for dish in Dish.objects.all() if dish.type=="main"]
+DESSERTS = [(str(dish.pk),dish.title) for dish in Dish.objects.all() if dish.type=="dessert"]
+
 class Guest(Orderable):
     """
     A single guest
@@ -141,9 +145,11 @@ class Guest(Orderable):
     last_name = models.TextField(null=True, blank=True)
     email = models.TextField(null=True, blank=True)
     is_attending = models.BooleanField(default=None, null=True)
-    meal = models.CharField(max_length=20, choices=MEALS, null=True, blank=True)
     is_child = models.BooleanField(default=False)
-    dishes = ParentalManyToManyField("Dish",related_name="dishes",null=True,blank=True)
+    starter = models.CharField(max_length=100,null=True,blank=True,choices=STARTERS)
+    main = models.CharField(max_length=100,null=True,blank=True,choices=MAINS)
+    dessert = models.CharField(max_length=100,null=True,blank=True,choices=DESSERTS)
+    #dishes = ParentalManyToManyField("Dish",related_name="dishes",null=True,blank=True)
 
     @property
     def name(self):

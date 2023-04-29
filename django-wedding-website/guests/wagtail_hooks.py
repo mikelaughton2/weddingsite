@@ -8,6 +8,7 @@ from wagtail.admin.menu import MenuItem
 from django.urls import path, reverse
 from django.utils.translation import gettext as _
 from wagtail.admin.edit_handlers import InlinePanel
+from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.admin.panels import ObjectList
 from django.db import models
 from django import forms
@@ -91,8 +92,9 @@ class GuestAdmin(ModelAdmin):
         FieldPanel("email"),
         FieldPanel("is_attending"),
         FieldPanel("is_child"),
-        FieldPanel("meal"),
-        FieldPanel("dishes",heading=_("Meal"),widget=forms.CheckboxSelectMultiple)
+        FieldPanel("starter"),
+        FieldPanel("main"),
+        FieldPanel("dessert"),
     ]
 
 class PartyGuest(ModelAdminGroup):
@@ -108,7 +110,7 @@ class MenuAdmin(ModelAdmin):
     menu_order = 200
     panels = [
         FieldPanel("name",heading="Name"),
-        InlinePanel("dish",heading="Dishes",label="Dish"),
+        FieldPanel("dishes",heading="Dishes",widget=forms.CheckboxSelectMultiple),
     ]
 
 modeladmin_register(PartyAdmin)

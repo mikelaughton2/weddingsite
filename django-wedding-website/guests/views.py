@@ -287,26 +287,29 @@ def GuestMenuFollowUp(request,invite_id):
         for key,value in request.POST.items():
             if any(key.startswith(x) for x in ["appetiser","starter","main","dessert"]):
                 dish_pk = int(value.split("-")[1])
+                print(dish_pk)
                 # This has to be true
                 guest_pk = int(key.split("_guest-")[1])
                 guest = Guest.objects.get(pk=guest_pk)
                 if not guest in guests_evaluated:
                     guests_evaluated.append(guest)
                 dish = Dish.objects.get(pk=dish_pk)
-                POST_REQ += "{}: Dish Name: {}<br>".format(guest.name, dish.title)
-                guest.dishes.add(dish)
-                print("adding {}".format(dish))
+                dish_type = dish.type
+                selection = str(dish.pk)
+                setattr(guest,dish_type,selection)
                 guest.save()
+                print(guest.name + "is having :")
+                print(getattr(guest,dish_type))
 
         COURSES = ['app','starter','main','dessert']
         STR_RESP = ""
         for guest in guests_evaluated:
             print(guest)
-            meal_types = [i.type for i in guest.dishes.all()]
+            meal_types = ["starter","main","dessert"]
             if not all(x==y for x,y in zip(meal_types,COURSES)):
                 # raise Exception("Please chooose one of each course. You chose {} for {} ".format(meal_types,guest.name))
                 print("Missing courses")
-            STR_RESP += "<br>{} will have {}".format(guest.name,guest.dishes.all())
+            STR_RESP += "<br>{} will have {}".format(guest.name,guest.starter)
         return HttpResponse(STR_RESP)
 
     if request.method=="GET":
