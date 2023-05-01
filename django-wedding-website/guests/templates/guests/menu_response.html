@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load wagtailcore_tags %}
+{% load wagtailimages_tags %}
+{% block page_head %}
+    <link href="{% static 'bigday/css/rsvp-confirmation.css' %}" rel="stylesheet" xmlns="http://www.w3.org/1999/html">
+    {% image template.hero_image original as hero_image %}
+
+    <style type="text/css">
+      body{
+        background: linear-gradient(
+          rgba(255, 255, 255, 0.6),
+          rgba(255, 255, 255, 0.6)
+        ), url({{hero_image.url}}) no-repeat center center fixed;
+      }
+      </style>
+{% endblock %}
+{% block page_content %}
+    <div class="layer"></div>
+    <div class="container" id="main">
+        {{ str_response }}
+        <p>
+            - {{couple}}
+        </p>
+    </div>
+{% endblock %}

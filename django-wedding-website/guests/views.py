@@ -308,9 +308,12 @@ def GuestMenuFollowUp(request,invite_id):
             meal_types = ["starter","main","dessert"]
             if not all(x==y for x,y in zip(meal_types,COURSES)):
                 # raise Exception("Please chooose one of each course. You chose {} for {} ".format(meal_types,guest.name))
-                print("Missing courses")
+                STR_RESP = _("Please choose one of each course!")
+                context = { 'str_response':STR_RESP, }
+                return render(request, "menu_response.html", context=context)
             STR_RESP += "<br>{} will have {}".format(guest.name,guest.starter)
-        return HttpResponse(STR_RESP)
+            context = { 'str_response':STR_RESP, }
+        return render(request, "menu_response.html", context=context)
 
     if request.method=="GET":
         return render(request, "guests/followupquestion.html", context =
